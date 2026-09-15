@@ -1,34 +1,140 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a1423">
+  <meta name="description" content="林墨 · 前端开发者与设计师的个人作品集，专注于构建简洁、优雅且富有交互感的数字体验。">
+  <meta name="color-scheme" content="light dark">
   <title>林墨 · 作品集</title>
+
+  <!-- 提前设置主题，避免首屏闪烁（FOUC） -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('linmo-theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+      } catch (e) { /* 隐私模式等场景忽略 */ }
+    })();
+  </script>
+
   <style>
-    /* ===== 全局重置与变量 ===== */
-    * {
+    /* ============================================================
+       1. 全局重置与设计变量
+       ============================================================ */
+    *,
+    *::before,
+    *::after {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
     :root {
-      --bg: #f9fafc;
-      --card: #ffffff;
-      --text-primary: #1e2b3c;
+      /* —— 背景 / 遮罩 —— */
+      --bg-fallback: #0a1423;
+      --overlay-top: rgba(10, 20, 35, 0.30);
+      --overlay-bottom: rgba(10, 20, 35, 0.66);
+
+      /* —— 卡片 —— */
+      --card-bg: rgba(255, 255, 255, 0.86);
+      --card-border: rgba(255, 255, 255, 0.65);
+
+      /* —— 文字 —— */
+      --text-primary: #16243a;
       --text-secondary: #4a5b6e;
+      --text-muted: #8a9aa9;
+
+      /* —— 主色 —— */
       --accent: #3a7bd5;
       --accent-light: #e9f0fe;
-      --accent-dark: #2563c4;
+
+      /* —— 中性色 —— */
       --border-light: #eef2f6;
-      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.02);
-      --shadow-hover: 0 20px 30px -10px rgba(0, 20, 40, 0.1);
-      --radius: 20px;
-      --radius-sm: 12px;
-      --transition: all 0.25s ease;
+      --chip-bg: rgba(242, 245, 249, 0.75);
+      --chip-text: #2c3e50;
+      --chip-hover-bg: #ffffff;
+      --link-bg: rgba(249, 250, 252, 0.7);
+
+      /* —— 阴影 / 圆角 —— */
+      --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.28);
+      --shadow-chip: 0 6px 14px rgba(58, 123, 213, 0.16);
+      --radius-lg: 20px;
+      --radius-pill: 999px;
+
+      /* —— 动效 —— */
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* ===== 背景拼图容器（桌面端） ===== */
+    /* —— 深色主题 —— */
+    [data-theme="dark"] {
+      --overlay-top: rgba(4, 9, 18, 0.45);
+      --overlay-bottom: rgba(4, 9, 18, 0.74);
+
+      --card-bg: rgba(20, 28, 42, 0.84);
+      --card-border: rgba(255, 255, 255, 0.08);
+
+      --text-primary: #eaf0f8;
+      --text-secondary: #a9b7c9;
+      --text-muted: #7e8ea3;
+
+      --accent: #6ba3f0;
+      --accent-light: rgba(107, 163, 240, 0.14);
+
+      --border-light: rgba(255, 255, 255, 0.08);
+      --chip-bg: rgba(255, 255, 255, 0.06);
+      --chip-text: #c9d6e6;
+      --chip-hover-bg: rgba(255, 255, 255, 0.12);
+      --link-bg: rgba(255, 255, 255, 0.05);
+
+      --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
+      --shadow-chip: 0 6px 14px rgba(0, 0, 0, 0.32);
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                   'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      min-height: 100dvh;
+      position: relative;
+      background-color: var(--bg-fallback);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* 键盘焦点可见性 */
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    /* 跳转链接（无障碍） */
+    .skip-link {
+      position: absolute;
+      top: 0;
+      left: -9999px;
+      z-index: 999;
+      padding: 0.6rem 1rem;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.85rem;
+      text-decoration: none;
+      border-radius: 0 0 8px 0;
+    }
+    .skip-link:focus {
+      left: 0;
+    }
+
+    /* ============================================================
+       2. 桌面端拼图背景
+       ============================================================ */
     .bg-collage {
       position: fixed;
       inset: 0;
@@ -38,58 +144,61 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      /* 图片未加载 / 加载失败时的兜底渐变 */
+      background: linear-gradient(135deg, #0f1b2d 0%, #1b2c47 45%, #0a1423 100%);
     }
 
-    .bg-collage .bg-piece {
+    .bg-piece {
       width: 100%;
       height: 100%;
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      opacity: 0;
+      transition: opacity 0.9s ease;
     }
 
-    /* 四张背景图路径 */
-    .bg-piece:nth-child(1) { background-image: url('assets/images/bg/1.jpg'); }
-    .bg-piece:nth-child(2) { background-image: url('assets/images/bg/2.jpg'); }
-    .bg-piece:nth-child(3) { background-image: url('assets/images/bg/3.jpg'); }
-    .bg-piece:nth-child(4) { background-image: url('assets/images/bg/4.jpg'); }
+    .bg-piece.is-loaded {
+      opacity: 1;
+    }
 
-    /* 背景遮罩：让文字清晰，但保留图片可见度 */
+    /* 背景遮罩：保证文字可读，同时保留图片层次 */
     .bg-overlay {
       position: fixed;
       inset: 0;
       z-index: -1;
-      background: rgba(10, 20, 35, 0.45);
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
+      pointer-events: none;
+      background:
+        radial-gradient(120% 100% at 78% 22%,
+          rgba(10, 20, 35, 0) 0%,
+          var(--overlay-bottom) 78%),
+        linear-gradient(180deg, var(--overlay-top), var(--overlay-bottom));
+      transition: background 0.3s ease;
     }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft Yahei', sans-serif;
-      color: var(--text-primary);
-      line-height: 1.6;
-      min-height: 100vh;
-      position: relative;
-      background-color: #0a1423; /* 移动端若图片加载失败，有深色底色 */
-    }
-
-    /* ===== 悬浮面板（桌面端右上角） ===== */
+    /* ============================================================
+       3. 悬浮面板
+       ============================================================ */
     .main-card {
       position: fixed;
       top: 2rem;
       right: 2rem;
-      width: 380px;
-      max-height: 90vh;
+      width: min(380px, calc(100vw - 4rem));
+      max-height: calc(100vh - 4rem);
+      max-height: calc(100dvh - 4rem);
       overflow-y: auto;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: var(--radius);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      padding: 2rem 1.8rem 2.2rem;
-      border: 1px solid rgba(255, 255, 255, 0.6);
+      overscroll-behavior: contain;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px) saturate(150%);
+      -webkit-backdrop-filter: blur(16px) saturate(150%);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--card-border);
+      /* 顶部留白给主题切换按钮 */
+      padding: 3rem 1.8rem 2.2rem;
       z-index: 10;
-      transition: var(--transition);
+      transition: background-color var(--transition), border-color var(--transition),
+                  box-shadow var(--transition);
     }
 
     .main-card::-webkit-scrollbar {
@@ -103,7 +212,40 @@
       border-radius: 8px;
     }
 
-    /* ===== 头部区域 ===== */
+    /* —— 主题切换按钮 —— */
+    .theme-toggle {
+      position: absolute;
+      top: 0.9rem;
+      right: 0.9rem;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+      line-height: 1;
+      color: var(--text-secondary);
+      background: var(--link-bg);
+      border: 1px solid var(--border-light);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .theme-toggle:hover {
+      background: var(--accent-light);
+      color: var(--accent);
+      border-color: transparent;
+      transform: rotate(-15deg) scale(1.06);
+    }
+
+    .theme-toggle:active {
+      transform: scale(0.92);
+    }
+
+    /* ============================================================
+       4. 头部区域
+       ============================================================ */
     .profile-header {
       display: flex;
       flex-wrap: wrap;
@@ -116,36 +258,36 @@
       flex-shrink: 0;
       width: 70px;
       height: 70px;
-      border-radius: 32%;
-      background: linear-gradient(135deg, #3a7bd5, #8ca9e0);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
       font-size: 1.8rem;
       font-weight: 500;
-      box-shadow: 0 12px 18px -8px rgba(58, 123, 213, 0.3);
+      color: #fff;
+      border-radius: 32%;
+      background: linear-gradient(135deg, #3a7bd5, #8ca9e0);
+      box-shadow: 0 12px 18px -8px rgba(58, 123, 213, 0.35);
       transition: var(--transition);
-      cursor: pointer;
-      opacity: 0.92;
+      user-select: none;
     }
 
     .avatar-wrapper:hover {
-      transform: scale(1.02);
+      transform: scale(1.03) rotate(-2deg);
       border-radius: 40%;
-      opacity: 1;
+      box-shadow: 0 16px 24px -8px rgba(58, 123, 213, 0.45);
     }
 
     .intro {
       flex: 1;
+      min-width: 0;
     }
 
     .intro .greeting {
       font-size: 0.8rem;
       font-weight: 500;
       letter-spacing: 0.3px;
-      color: var(--accent);
       text-transform: uppercase;
+      color: var(--accent);
       margin-bottom: 0.3rem;
     }
 
@@ -154,18 +296,21 @@
       font-weight: 650;
       letter-spacing: -0.02em;
       line-height: 1.2;
-      color: #0f1a2c;
+      color: var(--text-primary);
       margin-bottom: 0.3rem;
     }
 
     .intro .tagline {
       font-size: 0.9rem;
+      font-weight: 400;
+      line-height: 1.55;
       color: var(--text-secondary);
       margin-bottom: 0.8rem;
-      font-weight: 400;
-      line-height: 1.5;
     }
 
+    /* ============================================================
+       5. 联系方式
+       ============================================================ */
     .contact-links {
       display: flex;
       flex-wrap: wrap;
@@ -177,16 +322,16 @@
       display: inline-flex;
       align-items: center;
       gap: 0.3rem;
+      padding: 0.3rem 0.7rem;
       font-size: 0.75rem;
+      font-weight: 500;
       color: var(--text-secondary);
       text-decoration: none;
-      padding: 0.3rem 0.7rem;
-      background: rgba(249, 250, 252, 0.7);
-      border-radius: 40px;
+      background: var(--link-bg);
       border: 1px solid var(--border-light);
+      border-radius: var(--radius-pill);
       transition: var(--transition);
-      font-weight: 500;
-      opacity: 0.9;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .contact-links a:hover {
@@ -194,97 +339,141 @@
       color: var(--accent);
       border-color: transparent;
       transform: translateY(-2px);
-      opacity: 1;
     }
 
-    /* ===== 技能标签 ===== */
+    /* ============================================================
+       6. 技能标签
+       ============================================================ */
     .skills {
       display: flex;
       flex-wrap: wrap;
       gap: 0.4rem 0.6rem;
       margin: 1rem 0 1.2rem;
-      padding-top: 0.8rem;
-      border-top: 1px solid rgba(238, 242, 246, 0.6);
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--border-light);
     }
 
     .skill-tag {
-      background: rgba(242, 245, 249, 0.75);
-      color: #2c3e50;
       padding: 0.3rem 0.8rem;
-      border-radius: 30px;
       font-size: 0.75rem;
       font-weight: 500;
       letter-spacing: 0.2px;
-      transition: var(--transition);
+      color: var(--chip-text);
+      background: var(--chip-bg);
       border: 1px solid transparent;
-      opacity: 0.88;
+      border-radius: var(--radius-pill);
+      transition: var(--transition);
+      cursor: default;
     }
 
     .skill-tag:hover {
-      background: white;
-      border-color: var(--accent);
+      background: var(--chip-hover-bg);
       color: var(--accent);
-      box-shadow: 0 6px 14px rgba(58, 123, 213, 0.12);
+      border-color: var(--accent);
+      box-shadow: var(--shadow-chip);
       transform: translateY(-2px);
-      opacity: 1;
     }
 
-    /* ===== 页脚 ===== */
+    /* ============================================================
+       7. 页脚
+       ============================================================ */
     .footer-note {
       margin-top: 1.5rem;
+      padding-top: 1.2rem;
       text-align: center;
       font-size: 0.75rem;
-      color: #8a9aa9;
       letter-spacing: 0.2px;
-      border-top: 1px solid rgba(238, 242, 246, 0.6);
-      padding-top: 1.2rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-light);
     }
 
     .footer-note a {
       color: var(--accent);
-      text-decoration: none;
       font-weight: 500;
+      text-decoration: none;
     }
 
     .footer-note a:hover {
       text-decoration: underline;
     }
 
-    /* ===== 响应式：手机端流式布局 ===== */
+    /* ============================================================
+       8. Toast 轻提示
+       ============================================================ */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+      z-index: 100;
+      max-width: calc(100vw - 3rem);
+      padding: 0.6rem 1.1rem;
+      font-size: 0.8rem;
+      color: #fff;
+      background: rgba(20, 30, 45, 0.94);
+      border-radius: var(--radius-pill);
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 1rem);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* ============================================================
+       9. 响应式：移动端流式布局
+       ============================================================ */
     @media (max-width: 768px) {
+      /* 隐藏桌面拼图 */
       .bg-collage {
-        display: none; /* 隐藏拼图 */
+        display: none;
       }
 
       body {
-        padding: 1rem 0.75rem;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        background-attachment: scroll;
-        /* 移动端随机背景由 JS 动态设置 */
+        padding: calc(1.25rem + env(safe-area-inset-top, 0px))
+                 calc(0.9rem + env(safe-area-inset-right, 0px))
+                 calc(1.25rem + env(safe-area-inset-bottom, 0px))
+                 calc(0.9rem + env(safe-area-inset-left, 0px));
+        background-color: var(--bg-fallback);
+        background-image: linear-gradient(180deg,
+          rgba(10, 20, 35, 0.45),
+          rgba(10, 20, 35, 0.68));
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      /* 随机背景由 JS 注入 --mobile-bg 后生效 */
+      body.has-bg-image {
+        background-image:
+          linear-gradient(180deg, rgba(10, 20, 35, 0.45), rgba(10, 20, 35, 0.68)),
+          var(--mobile-bg);
       }
 
       .main-card {
         position: relative;
-        top: 0;
-        right: 0;
+        inset: auto;
         width: 100%;
+        max-width: 520px;
         max-height: none;
-        overflow-y: visible;
+        overflow: visible;
+        margin: auto;            /* 比 justify-content:center 更安全，溢出时不会被裁切 */
+        padding: 3rem 1.4rem 2.2rem;
         border-radius: 24px;
-        margin: 0 auto;
-        padding: 1.8rem 1.25rem 2.2rem;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(8px);
       }
 
       .profile-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
-        margin-bottom: 1.5rem;
       }
 
       .avatar-wrapper {
@@ -308,13 +497,15 @@
       }
     }
 
-    /* 滚动条 */
+    /* ============================================================
+       10. 全局滚动条
+       ============================================================ */
     ::-webkit-scrollbar {
       width: 6px;
+      height: 6px;
     }
     ::-webkit-scrollbar-track {
       background: rgba(238, 242, 246, 0.5);
-      border-radius: 8px;
     }
     ::-webkit-scrollbar-thumb {
       background: #cbd5e1;
@@ -324,19 +515,68 @@
       background: #a0b3c9;
     }
 
+    /* ============================================================
+       11. 入场动画
+       ============================================================ */
     .fade-in {
-      animation: fadeIn 0.5s ease-out;
+      animation: fadeIn 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) both;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================================
+       12. 无障碍 / 打印
+       ============================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .bg-piece { opacity: 1 !important; }
+    }
+
+    @media print {
+      .bg-collage,
+      .bg-overlay,
+      .theme-toggle,
+      .toast,
+      .skip-link { display: none !important; }
+
+      body {
+        background: #fff !important;
+        color: #000;
+        display: block;
+        padding: 0;
+      }
+
+      .main-card {
+        position: static;
+        width: 100%;
+        max-width: none;
+        max-height: none;
+        overflow: visible;
+        margin: 0;
+        padding: 0;
+        background: #fff !important;
+        border: none;
+        box-shadow: none;
+        backdrop-filter: none;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- ===== 桌面端拼图背景 ===== -->
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <!-- ===== 桌面端拼图背景（图片由 JS 注入，加载失败时保留兜底渐变） ===== -->
   <div class="bg-collage" aria-hidden="true">
     <div class="bg-piece"></div>
     <div class="bg-piece"></div>
@@ -348,30 +588,39 @@
   <div class="bg-overlay" aria-hidden="true"></div>
 
   <!-- ===== 悬浮面板 ===== -->
-  <div class="main-card fade-in">
+  <main id="main" class="main-card fade-in">
+
+    <!-- 主题切换 -->
+    <button class="theme-toggle" type="button" aria-label="切换深色模式" title="切换深色模式">
+      <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+    </button>
 
     <!-- 头部 -->
-    <div class="profile-header">
-      <div class="avatar-wrapper" aria-label="头像，显示名字缩写" tabindex="0">
-        <span>LM</span>
+    <header class="profile-header">
+      <div class="avatar-wrapper" role="img" aria-label="林墨的头像（字母缩写 LM）">
+        <span aria-hidden="true">LM</span>
       </div>
+
       <div class="intro">
-        <div class="greeting">✦ 创意开发者</div>
+        <p class="greeting">✦ 创意开发者</p>
         <h1>林 墨</h1>
         <p class="tagline">
           热爱构建简洁、优雅且富有交互感的数字体验。<br>
           专注于前端开发与设计，追求代码与美学的平衡。
         </p>
-        <div class="contact-links">
-          <a href="#" title="电子邮箱">✉️ hello@linmo.design</a>
+
+        <nav class="contact-links" aria-label="联系方式">
+          <a href="mailto:hello@linmo.design"
+             data-copy="hello@linmo.design"
+             title="点击复制邮箱">✉️ hello@linmo.design</a>
           <a href="#" title="GitHub">🐙 github.com/linmo</a>
           <a href="#" title="作品集站点">🔗 个人作品集</a>
-        </div>
+        </nav>
       </div>
-    </div>
+    </header>
 
     <!-- 技能标签 -->
-    <div class="skills" aria-label="技能标签">
+    <section class="skills" aria-label="技能标签">
       <span class="skill-tag">HTML5</span>
       <span class="skill-tag">CSS3</span>
       <span class="skill-tag">JavaScript</span>
@@ -381,51 +630,226 @@
       <span class="skill-tag">UI/UX</span>
       <span class="skill-tag">响应式设计</span>
       <span class="skill-tag">交互动效</span>
-    </div>
+    </section>
 
     <!-- 页脚 -->
-    <div class="footer-note">
-      <p>© 2025 林墨 · 用心设计 & 编码 · <a href="#">下载简历</a></p>
-    </div>
-  </div>
+    <footer class="footer-note">
+      <p>© <span data-year>2025</span> 林墨 · 用心设计 &amp; 编码 · <a href="#">下载简历</a></p>
+    </footer>
+  </main>
+
+  <!-- 轻提示 -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    (function() {
-      console.log("✨ 林墨 · 作品集已加载");
+    (function () {
+      'use strict';
 
-      // ===== 移动端随机背景 =====
-      const isMobile = window.matchMedia('(max-width: 768px)').matches;
-      
-      if (isMobile) {
-        // 四张背景图的路径（请确保图片存在于 assets/images/bg/ 下）
-        const bgImages = [
-          'assets/images/bg/1.png',
-          'assets/images/bg/2.png',
-          'assets/images/bg/3.png',
-          'assets/images/bg/4.png'
-        ];
+      /* ==========================================================
+         配置区（唯一数据源，改这里就够了）
+         ========================================================== */
+      var BG_IMAGES = [
+        'assets/images/bg/1.webg',
+        'assets/images/bg/2.webg',
+        'assets/images/bg/3.webg',
         
-        // 随机选一张
-        const randomIndex = Math.floor(Math.random() * bgImages.length);
-        const selectedImage = bgImages[randomIndex];
-        
-        // 设置到 body 背景
-        document.body.style.backgroundImage = `url('${selectedImage}')`;
-        document.body.style.backgroundSize = 'cover';
-        document.body.style.backgroundPosition = 'center';
-        document.body.style.backgroundRepeat = 'no-repeat';
-        document.body.style.backgroundAttachment = 'scroll';
-        
-        console.log(`📱 移动端随机背景已应用：第 ${randomIndex + 1} 张`);
+      ];
+      var MOBILE_BREAKPOINT = 768;
+      var THEME_KEY = 'linmo-theme';
+
+      var root = document.documentElement;
+      var body = document.body;
+      var mqMobile = window.matchMedia('(max-width: ' + MOBILE_BREAKPOINT + 'px)');
+
+      /* ==========================================================
+         1. 主题切换
+         ========================================================== */
+      var themeToggle = document.querySelector('.theme-toggle');
+      var themeIcon = themeToggle && themeToggle.querySelector('.theme-toggle__icon');
+
+      function syncThemeUI(theme) {
+        if (!themeToggle) return;
+        var isDark = theme === 'dark';
+        if (themeIcon) themeIcon.textContent = isDark ? '☀️' : '🌙';
+        var label = isDark ? '切换到浅色模式' : '切换到深色模式';
+        themeToggle.setAttribute('aria-label', label);
+        themeToggle.setAttribute('title', label);
       }
 
-      // ===== 阻止空链接跳转 =====
-      document.querySelectorAll('a[href="#"]').forEach(link => {
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          console.log('链接点击:', link.textContent.trim());
+      function setTheme(theme, persist) {
+        root.dataset.theme = theme;
+        syncThemeUI(theme);
+
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', theme === 'dark' ? '#0d1420' : '#0a1423');
+
+        if (persist) {
+          try { localStorage.setItem(THEME_KEY, theme); } catch (e) { /* 忽略 */ }
+        }
+      }
+
+      // 初始同步（head 中的内联脚本已提前写好 data-theme）
+      setTheme(root.dataset.theme || 'light', false);
+
+      if (themeToggle) {
+        themeToggle.addEventListener('click', function () {
+          setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark', true);
         });
+      }
+
+      /* ==========================================================
+         2. 桌面端拼图背景（预加载 + 淡入 + 失败兜底）
+         ========================================================== */
+      var pieces = document.querySelectorAll('.bg-piece');
+
+      Array.prototype.forEach.call(pieces, function (piece, index) {
+        var src = BG_IMAGES[index % BG_IMAGES.length];
+        var probe = new Image();
+
+        probe.onload = function () {
+          piece.style.backgroundImage = 'url("' + src + '")';
+          piece.classList.add('is-loaded');
+        };
+        probe.onerror = function () {
+          // 保留 .bg-collage 的兜底渐变，不显示破图
+          console.warn('[背景] 桌面拼图加载失败：' + src);
+        };
+        probe.src = src;
       });
+
+      /* ==========================================================
+         3. 移动端随机背景
+         ========================================================== */
+      var lastIndex = -1;
+
+      function applyMobileBackground() {
+        var index = Math.floor(Math.random() * BG_IMAGES.length);
+
+        // 避免连续两次抽到同一张
+        if (BG_IMAGES.length > 1 && index === lastIndex) {
+          index = (index + 1) % BG_IMAGES.length;
+        }
+        lastIndex = index;
+
+        var src = BG_IMAGES[index];
+        var probe = new Image();
+
+        probe.onload = function () {
+          body.style.setProperty('--mobile-bg', 'url("' + src + '")');
+          body.classList.add('has-bg-image');
+          console.log('📱 移动端随机背景已应用：' + src);
+        };
+        probe.onerror = function () {
+          body.classList.remove('has-bg-image');
+          console.warn('[背景] 移动端背景加载失败：' + src);
+        };
+        probe.src = src;
+      }
+
+      function handleViewportChange(event) {
+        if (event.matches) {
+          applyMobileBackground();
+        } else {
+          // 回到桌面端：清理移动端背景，避免多余请求 / 样式残留
+          body.classList.remove('has-bg-image');
+          body.style.removeProperty('--mobile-bg');
+        }
+      }
+
+      if (typeof mqMobile.addEventListener === 'function') {
+        mqMobile.addEventListener('change', handleViewportChange);
+      } else if (typeof mqMobile.addListener === 'function') {
+        mqMobile.addListener(handleViewportChange); // 兼容旧版 Safari
+      }
+
+      if (mqMobile.matches) {
+        applyMobileBackground();
+      }
+
+      /* ==========================================================
+         4. Toast 轻提示
+         ========================================================== */
+      var toast = document.getElementById('toast');
+      var toastTimer = null;
+
+      function showToast(message) {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add('is-visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          toast.classList.remove('is-visible');
+        }, 2000);
+      }
+
+      /* ==========================================================
+         5. 复制到剪贴板（含降级方案）
+         ========================================================== */
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve, reject) {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.top = '-1000px';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          ta.setSelectionRange(0, ta.value.length);
+          try {
+            document.execCommand('copy') ? resolve() : reject(new Error('execCommand failed'));
+          } catch (err) {
+            reject(err);
+          } finally {
+            document.body.removeChild(ta);
+          }
+        });
+      }
+
+      Array.prototype.forEach.call(
+        document.querySelectorAll('[data-copy]'),
+        function (el) {
+          el.addEventListener('click', function (event) {
+            event.preventDefault();
+            var value = el.getAttribute('data-copy');
+
+            copyText(value).then(function () {
+              showToast('邮箱已复制：' + value);
+            }).catch(function () {
+              showToast('复制失败，请手动复制');
+            });
+          });
+        }
+      );
+
+      /* ==========================================================
+         6. 占位链接：阻止跳转并给出反馈
+         ========================================================== */
+      Array.prototype.forEach.call(
+        document.querySelectorAll('a[href="#"]'),
+        function (link) {
+          link.addEventListener('click', function (event) {
+            event.preventDefault();
+            showToast('演示链接：' + link.textContent.trim());
+          });
+        }
+      );
+
+      /* ==========================================================
+         7. 页脚年份自动更新
+         ========================================================== */
+      var yearEl = document.querySelector('[data-year]');
+      if (yearEl) {
+        yearEl.textContent = String(new Date().getFullYear());
+      }
+
+      /* ==========================================================
+         8. 完成
+         ========================================================== */
+      console.log('%c✨ 林墨 · 作品集已加载', 'color:#3a7bd5;font-weight:600;');
     })();
   </script>
 </body>
