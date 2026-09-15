@@ -1,856 +1,799 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="light">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0a1423">
-  <meta name="description" content="林墨 · 前端开发者与设计师的个人作品集，专注于构建简洁、优雅且富有交互感的数字体验。">
-  <meta name="color-scheme" content="light dark">
-  <title>林墨 · 作品集</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人主页 · Leleo 风格</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  <!-- 提前设置主题，避免首屏闪烁（FOUC） -->
-  <script>
-    (function () {
-      try {
-        var saved = localStorage.getItem('linmo-theme');
-        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
-      } catch (e) { /* 隐私模式等场景忽略 */ }
-    })();
-  </script>
+        :root {
+            --primary: #7C4DFF;
+            --primary-light: #B388FF;
+            --bg-dark: #0F0F1A;
+            --bg-card: rgba(25, 25, 45, 0.75);
+            --text-primary: #EAEAEA;
+            --text-secondary: #9E9EB3;
+            --border: rgba(124, 77, 255, 0.2);
+            --glow: rgba(124, 77, 255, 0.35);
+        }
 
-  <style>
-    /* ============================================================
-       1. 全局重置与设计变量
-       ============================================================ */
-    *,
-    *::before,
-    *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
 
-    :root {
-      /* —— 背景 / 遮罩 —— */
-      --bg-fallback: #0a1423;
-      --overlay-top: rgba(10, 20, 35, 0.30);
-      --overlay-bottom: rgba(10, 20, 35, 0.66);
+        /* 动态背景 */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
 
-      /* —— 卡片 —— */
-      --card-bg: rgba(255, 255, 255, 0.86);
-      --card-border: rgba(255, 255, 255, 0.65);
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(124, 77, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(179, 136, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(124, 77, 255, 0.06) 0%, transparent 50%);
+            animation: bgRotate 30s linear infinite;
+        }
 
-      /* —— 文字 —— */
-      --text-primary: #16243a;
-      --text-secondary: #4a5b6e;
-      --text-muted: #8a9aa9;
+        @keyframes bgRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-      /* —— 主色 —— */
-      --accent: #3a7bd5;
-      --accent-light: #e9f0fe;
+        /* 粒子效果 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
 
-      /* —— 中性色 —— */
-      --border-light: #eef2f6;
-      --chip-bg: rgba(242, 245, 249, 0.75);
-      --chip-text: #2c3e50;
-      --chip-hover-bg: #ffffff;
-      --link-bg: rgba(249, 250, 252, 0.7);
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: floatParticle linear infinite;
+        }
 
-      /* —— 阴影 / 圆角 —— */
-      --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.28);
-      --shadow-chip: 0 6px 14px rgba(58, 123, 213, 0.16);
-      --radius-lg: 20px;
-      --radius-pill: 999px;
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 0.4; }
+            90% { opacity: 0.4; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
 
-      /* —— 动效 —— */
-      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+        /* 主容器 */
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 80px 24px 120px;
+        }
 
-    /* —— 深色主题 —— */
-    [data-theme="dark"] {
-      --overlay-top: rgba(4, 9, 18, 0.45);
-      --overlay-bottom: rgba(4, 9, 18, 0.74);
+        /* 头像区域 */
+        .avatar-section {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeInUp 0.8s ease-out;
+        }
 
-      --card-bg: rgba(20, 28, 42, 0.84);
-      --card-border: rgba(255, 255, 255, 0.08);
+        .avatar-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 24px;
+        }
 
-      --text-primary: #eaf0f8;
-      --text-secondary: #a9b7c9;
-      --text-muted: #7e8ea3;
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 40px var(--glow);
+        }
 
-      --accent: #6ba3f0;
-      --accent-light: rgba(107, 163, 240, 0.14);
+        .avatar-ring {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light), var(--primary)) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: ringRotate 8s linear infinite;
+        }
 
-      --border-light: rgba(255, 255, 255, 0.08);
-      --chip-bg: rgba(255, 255, 255, 0.06);
-      --chip-text: #c9d6e6;
-      --chip-hover-bg: rgba(255, 255, 255, 0.12);
-      --link-bg: rgba(255, 255, 255, 0.05);
+        @keyframes ringRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-      --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.65);
-      --shadow-chip: 0 6px 14px rgba(0, 0, 0, 0.32);
-    }
+        .name {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff, var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-    html {
-      -webkit-text-size-adjust: 100%;
-    }
+        .tagline {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
 
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-                   'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-      color: var(--text-primary);
-      line-height: 1.6;
-      min-height: 100vh;
-      min-height: 100dvh;
-      position: relative;
-      background-color: var(--bg-fallback);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
+        /* 社交链接 */
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
 
-    /* 键盘焦点可见性 */
-    :focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 3px;
-    }
+        .social-link {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
 
-    /* 跳转链接（无障碍） */
-    .skip-link {
-      position: absolute;
-      top: 0;
-      left: -9999px;
-      z-index: 999;
-      padding: 0.6rem 1rem;
-      background: var(--accent);
-      color: #fff;
-      font-size: 0.85rem;
-      text-decoration: none;
-      border-radius: 0 0 8px 0;
-    }
-    .skip-link:focus {
-      left: 0;
-    }
+        .social-link:hover {
+            border-color: var(--primary);
+            color: var(--primary-light);
+            box-shadow: 0 0 20px var(--glow);
+            transform: translateY(-3px);
+        }
 
-    /* ============================================================
-       2. 桌面端拼图背景
-       ============================================================ */
-    .bg-collage {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      /* 图片未加载 / 加载失败时的兜底渐变 */
-      background: linear-gradient(135deg, #0f1b2d 0%, #1b2c47 45%, #0a1423 100%);
-    }
+        .social-link svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
 
-    .bg-piece {
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      opacity: 0;
-      transition: opacity 0.9s ease;
-    }
+        /* 技能标签 */
+        .skills-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 56px;
+            animation: fadeInUp 0.8s ease-out 0.15s both;
+        }
 
-    .bg-piece.is-loaded {
-      opacity: 1;
-    }
+        .skill-tag {
+            padding: 8px 18px;
+            border-radius: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
 
-    /* 背景遮罩：保证文字可读，同时保留图片层次 */
-    .bg-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background:
-        radial-gradient(120% 100% at 78% 22%,
-          rgba(10, 20, 35, 0) 0%,
-          var(--overlay-bottom) 78%),
-        linear-gradient(180deg, var(--overlay-top), var(--overlay-bottom));
-      transition: background 0.3s ease;
-    }
+        .skill-tag:hover {
+            border-color: var(--primary);
+            color: var(--primary-light);
+            box-shadow: 0 0 16px var(--glow);
+            transform: translateY(-2px);
+        }
 
-    /* ============================================================
-       3. 悬浮面板
-       ============================================================ */
-    .main-card {
-      position: fixed;
-      top: 2rem;
-      right: 2rem;
-      width: min(380px, calc(100vw - 4rem));
-      max-height: calc(100vh - 4rem);
-      max-height: calc(100dvh - 4rem);
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px) saturate(150%);
-      -webkit-backdrop-filter: blur(16px) saturate(150%);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-card);
-      border: 1px solid var(--card-border);
-      /* 顶部留白给主题切换按钮 */
-      padding: 3rem 1.8rem 2.2rem;
-      z-index: 10;
-      transition: background-color var(--transition), border-color var(--transition),
-                  box-shadow var(--transition);
-    }
+        /* 项目网格 */
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeInUp 0.8s ease-out 0.25s both;
+        }
 
-    .main-card::-webkit-scrollbar {
-      width: 4px;
-    }
-    .main-card::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .main-card::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 8px;
-    }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--primary), var(--primary-light));
+            border-radius: 2px;
+        }
 
-    /* —— 主题切换按钮 —— */
-    .theme-toggle {
-      position: absolute;
-      top: 0.9rem;
-      right: 0.9rem;
-      width: 36px;
-      height: 36px;
-      display: grid;
-      place-items: center;
-      font-size: 1rem;
-      line-height: 1;
-      color: var(--text-secondary);
-      background: var(--link-bg);
-      border: 1px solid var(--border-light);
-      border-radius: 50%;
-      cursor: pointer;
-      transition: var(--transition);
-      -webkit-tap-highlight-color: transparent;
-    }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 56px;
+        }
 
-    .theme-toggle:hover {
-      background: var(--accent-light);
-      color: var(--accent);
-      border-color: transparent;
-      transform: rotate(-15deg) scale(1.06);
-    }
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
 
-    .theme-toggle:active {
-      transform: scale(0.92);
-    }
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
 
-    /* ============================================================
-       4. 头部区域
-       ============================================================ */
-    .profile-header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 1.2rem;
-      margin-bottom: 1.5rem;
-    }
+        .project-card:hover {
+            border-color: rgba(124, 77, 255, 0.4);
+            box-shadow: 0 8px 40px rgba(124, 77, 255, 0.15);
+            transform: translateY(-4px);
+        }
 
-    .avatar-wrapper {
-      flex-shrink: 0;
-      width: 70px;
-      height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      font-weight: 500;
-      color: #fff;
-      border-radius: 32%;
-      background: linear-gradient(135deg, #3a7bd5, #8ca9e0);
-      box-shadow: 0 12px 18px -8px rgba(58, 123, 213, 0.35);
-      transition: var(--transition);
-      user-select: none;
-    }
+        .project-card:hover::before {
+            opacity: 1;
+        }
 
-    .avatar-wrapper:hover {
-      transform: scale(1.03) rotate(-2deg);
-      border-radius: 40%;
-      box-shadow: 0 16px 24px -8px rgba(58, 123, 213, 0.45);
-    }
+        .project-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(124, 77, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
 
-    .intro {
-      flex: 1;
-      min-width: 0;
-    }
+        .project-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
 
-    .intro .greeting {
-      font-size: 0.8rem;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 0.3rem;
-    }
+        .project-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
 
-    .intro h1 {
-      font-size: 1.8rem;
-      font-weight: 650;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-      color: var(--text-primary);
-      margin-bottom: 0.3rem;
-    }
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
 
-    .intro .tagline {
-      font-size: 0.9rem;
-      font-weight: 400;
-      line-height: 1.55;
-      color: var(--text-secondary);
-      margin-bottom: 0.8rem;
-    }
+        .tech-tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(124, 77, 255, 0.1);
+            color: var(--primary-light);
+            font-size: 11px;
+            font-weight: 500;
+        }
 
-    /* ============================================================
-       5. 联系方式
-       ============================================================ */
-    .contact-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.4rem;
-    }
+        /* 音乐播放器 */
+        .music-player {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+            position: relative;
+            overflow: hidden;
+        }
 
-    .contact-links a {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      padding: 0.3rem 0.7rem;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      text-decoration: none;
-      background: var(--link-bg);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius-pill);
-      transition: var(--transition);
-      -webkit-tap-highlight-color: transparent;
-    }
+        .music-player::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(124, 77, 255, 0.06) 0%, transparent 60%);
+            animation: bgRotate 20s linear infinite;
+        }
 
-    .contact-links a:hover {
-      background: var(--accent-light);
-      color: var(--accent);
-      border-color: transparent;
-      transform: translateY(-2px);
-    }
+        .music-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
 
-    /* ============================================================
-       6. 技能标签
-       ============================================================ */
-    .skills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem 0.6rem;
-      margin: 1rem 0 1.2rem;
-      padding-top: 0.9rem;
-      border-top: 1px solid var(--border-light);
-    }
+        .album-art {
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
 
-    .skill-tag {
-      padding: 0.3rem 0.8rem;
-      font-size: 0.75rem;
-      font-weight: 500;
-      letter-spacing: 0.2px;
-      color: var(--chip-text);
-      background: var(--chip-bg);
-      border: 1px solid transparent;
-      border-radius: var(--radius-pill);
-      transition: var(--transition);
-      cursor: default;
-    }
+        .album-art.spinning {
+            animation: spinDisc 3s linear infinite;
+        }
 
-    .skill-tag:hover {
-      background: var(--chip-hover-bg);
-      color: var(--accent);
-      border-color: var(--accent);
-      box-shadow: var(--shadow-chip);
-      transform: translateY(-2px);
-    }
+        @keyframes spinDisc {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-    /* ============================================================
-       7. 页脚
-       ============================================================ */
-    .footer-note {
-      margin-top: 1.5rem;
-      padding-top: 1.2rem;
-      text-align: center;
-      font-size: 0.75rem;
-      letter-spacing: 0.2px;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border-light);
-    }
+        .music-info {
+            flex: 1;
+            min-width: 0;
+        }
 
-    .footer-note a {
-      color: var(--accent);
-      font-weight: 500;
-      text-decoration: none;
-    }
+        .music-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-    .footer-note a:hover {
-      text-decoration: underline;
-    }
+        .music-artist {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
 
-    /* ============================================================
-       8. Toast 轻提示
-       ============================================================ */
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
-      z-index: 100;
-      max-width: calc(100vw - 3rem);
-      padding: 0.6rem 1.1rem;
-      font-size: 0.8rem;
-      color: #fff;
-      background: rgba(20, 30, 45, 0.94);
-      border-radius: var(--radius-pill);
-      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      opacity: 0;
-      pointer-events: none;
-      transform: translate(-50%, 1rem);
-      transition: opacity 0.25s ease, transform 0.25s ease;
-    }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
 
-    .toast.is-visible {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 2px;
+            width: 35%;
+            transition: width 0.3s linear;
+        }
 
-    /* ============================================================
-       9. 响应式：移动端流式布局
-       ============================================================ */
-    @media (max-width: 768px) {
-      /* 隐藏桌面拼图 */
-      .bg-collage {
-        display: none;
-      }
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
 
-      body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: calc(1.25rem + env(safe-area-inset-top, 0px))
-                 calc(0.9rem + env(safe-area-inset-right, 0px))
-                 calc(1.25rem + env(safe-area-inset-bottom, 0px))
-                 calc(0.9rem + env(safe-area-inset-left, 0px));
-        background-color: var(--bg-fallback);
-        background-image: linear-gradient(180deg,
-          rgba(10, 20, 35, 0.45),
-          rgba(10, 20, 35, 0.68));
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-      }
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
 
-      /* 随机背景由 JS 注入 --mobile-bg 后生效 */
-      body.has-bg-image {
-        background-image:
-          linear-gradient(180deg, rgba(10, 20, 35, 0.45), rgba(10, 20, 35, 0.68)),
-          var(--mobile-bg);
-      }
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
 
-      .main-card {
-        position: relative;
-        inset: auto;
-        width: 100%;
-        max-width: 520px;
-        max-height: none;
-        overflow: visible;
-        margin: auto;            /* 比 justify-content:center 更安全，溢出时不会被裁切 */
-        padding: 3rem 1.4rem 2.2rem;
-        border-radius: 24px;
-      }
+        .control-btn:hover {
+            border-color: var(--primary);
+            background: rgba(124, 77, 255, 0.12);
+            box-shadow: 0 0 16px var(--glow);
+        }
 
-      .profile-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-      }
+        .control-btn.play-btn {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            font-size: 18px;
+        }
 
-      .avatar-wrapper {
-        width: 80px;
-        height: 80px;
-        font-size: 2rem;
-        border-radius: 28%;
-      }
+        .control-btn.play-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 24px var(--glow);
+        }
 
-      .intro h1 {
-        font-size: 2.1rem;
-      }
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 40px 24px;
+            color: var(--text-secondary);
+            font-size: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
 
-      .intro .tagline {
-        font-size: 1rem;
-      }
+        .footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
 
-      .skill-tag {
-        padding: 0.45rem 1rem;
-        font-size: 0.85rem;
-      }
-    }
+        /* 动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    /* ============================================================
-       10. 全局滚动条
-       ============================================================ */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: rgba(238, 242, 246, 0.5);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 8px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #a0b3c9;
-    }
+        /* 响应式 */
+        @media (max-width: 640px) {
+            .container {
+                padding: 48px 16px 80px;
+            }
 
-    /* ============================================================
-       11. 入场动画
-       ============================================================ */
-    .fade-in {
-      animation: fadeIn 0.6s cubic-bezier(0.2, 0.7, 0.3, 1) both;
-    }
+            .avatar {
+                width: 96px;
+                height: 96px;
+                font-size: 38px;
+            }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+            .name {
+                font-size: 26px;
+            }
 
-    /* ============================================================
-       12. 无障碍 / 打印
-       ============================================================ */
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
-      .bg-piece { opacity: 1 !important; }
-    }
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
 
-    @media print {
-      .bg-collage,
-      .bg-overlay,
-      .theme-toggle,
-      .toast,
-      .skip-link { display: none !important; }
+            .music-content {
+                flex-direction: column;
+                text-align: center;
+            }
 
-      body {
-        background: #fff !important;
-        color: #000;
-        display: block;
-        padding: 0;
-      }
+            .music-info {
+                width: 100%;
+            }
 
-      .main-card {
-        position: static;
-        width: 100%;
-        max-width: none;
-        max-height: none;
-        overflow: visible;
-        margin: 0;
-        padding: 0;
-        background: #fff !important;
-        border: none;
-        box-shadow: none;
-        backdrop-filter: none;
-      }
-    }
-  </style>
+            .music-controls {
+                justify-content: center;
+            }
+        }
+
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+    </style>
 </head>
 <body>
 
-  <a class="skip-link" href="#main">跳到主要内容</a>
+    <!-- 动态背景 -->
+    <div class="bg-animation"></div>
 
-  <!-- ===== 桌面端拼图背景（图片由 JS 注入，加载失败时保留兜底渐变） ===== -->
-  <div class="bg-collage" aria-hidden="true">
-    <div class="bg-piece"></div>
-    <div class="bg-piece"></div>
-    <div class="bg-piece"></div>
-    <div class="bg-piece"></div>
-  </div>
+    <!-- 粒子 -->
+    <div class="particles" id="particles"></div>
 
-  <!-- 背景遮罩 -->
-  <div class="bg-overlay" aria-hidden="true"></div>
+    <div class="container">
 
-  <!-- ===== 悬浮面板 ===== -->
-  <main id="main" class="main-card fade-in">
+        <!-- 头像区域 -->
+        <section class="avatar-section">
+            <div class="avatar-wrapper">
+                <div class="avatar">L</div>
+                <div class="avatar-ring"></div>
+            </div>
+            <h1 class="name">Leleo</h1>
+            <p class="tagline">全栈开发者 · 开源爱好者 · 终身学习者</p>
+            <div class="social-links">
+                <a href="#" class="social-link" title="GitHub">
+                    <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                </a>
+                <a href="#" class="social-link" title="Twitter">
+                    <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+                <a href="#" class="social-link" title="Email">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                </a>
+            </div>
+        </section>
 
-    <!-- 主题切换 -->
-    <button class="theme-toggle" type="button" aria-label="切换深色模式" title="切换深色模式">
-      <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
-    </button>
+        <!-- 技能标签 -->
+        <section class="skills-section">
+            <span class="skill-tag">Vue.js</span>
+            <span class="skill-tag">React</span>
+            <span class="skill-tag">TypeScript</span>
+            <span class="skill-tag">Node.js</span>
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">Docker</span>
+            <span class="skill-tag">PostgreSQL</span>
+            <span class="skill-tag">Vuetify</span>
+        </section>
 
-    <!-- 头部 -->
-    <header class="profile-header">
-      <div class="avatar-wrapper" role="img" aria-label="林墨的头像（字母缩写 LM）">
-        <span aria-hidden="true">LM</span>
-      </div>
+        <!-- 项目展示 -->
+        <h2 class="section-title">项目作品</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-icon">🚀</div>
+                <h3 class="project-name">Leleo Home Page</h3>
+                <p class="project-desc">基于 Vue + Vuetify 的个人主页模板，支持 Vercel 一键部署与环境变量配置。</p>
+                <div class="project-tech">
+                    <span class="tech-tag">Vue</span>
+                    <span class="tech-tag">Vuetify</span>
+                    <span class="tech-tag">Vite</span>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-icon">🎨</div>
+                <h3 class="project-name">UI Component Library</h3>
+                <p class="project-desc">一套轻量级、可定制的 Vue 3 组件库，支持暗色主题与无障碍访问。</p>
+                <div class="project-tech">
+                    <span class="tech-tag">Vue 3</span>
+                    <span class="tech-tag">TypeScript</span>
+                    <span class="tech-tag">SCSS</span>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-icon">⚡</div>
+                <h3 class="project-name">API Gateway</h3>
+                <p class="project-desc">高性能微服务网关，支持动态路由、限流、鉴权与可观测性。</p>
+                <div class="project-tech">
+                    <span class="tech-tag">Go</span>
+                    <span class="tech-tag">Redis</span>
+                    <span class="tech-tag">gRPC</span>
+                </div>
+            </div>
+        </div>
 
-      <div class="intro">
-        <p class="greeting">✦ 创意开发者</p>
-        <h1>林 墨</h1>
-        <p class="tagline">
-          热爱构建简洁、优雅且富有交互感的数字体验。<br>
-          专注于前端开发与设计，追求代码与美学的平衡。
-        </p>
+        <!-- 音乐播放器 -->
+        <h2 class="section-title">正在收听</h2>
+        <div class="music-player">
+            <div class="music-content">
+                <div class="album-art spinning" id="albumArt">🎵</div>
+                <div class="music-info">
+                    <div class="music-title">Starry Sky</div>
+                    <div class="music-artist">Maple暖枫</div>
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="time-display">
+                        <span id="currentTime">1:12</span>
+                        <span id="totalTime">3:23</span>
+                    </div>
+                </div>
+                <div class="music-controls">
+                    <button class="control-btn" id="prevBtn" title="上一首">⏮</button>
+                    <button class="control-btn play-btn" id="playBtn" title="播放/暂停">⏸</button>
+                    <button class="control-btn" id="nextBtn" title="下一首">⏭</button>
+                </div>
+            </div>
+        </div>
 
-        <nav class="contact-links" aria-label="联系方式">
-          <a href="mailto:hello@linmo.design"
-             data-copy="hello@linmo.design"
-             title="点击复制邮箱">✉️ hello@linmo.design</a>
-          <a href="#" title="GitHub">🐙 github.com/linmo</a>
-          <a href="#" title="作品集站点">🔗 个人作品集</a>
-        </nav>
-      </div>
-    </header>
-
-    <!-- 技能标签 -->
-    <section class="skills" aria-label="技能标签">
-      <span class="skill-tag">HTML5</span>
-      <span class="skill-tag">CSS3</span>
-      <span class="skill-tag">JavaScript</span>
-      <span class="skill-tag">React</span>
-      <span class="skill-tag">Vue</span>
-      <span class="skill-tag">Figma</span>
-      <span class="skill-tag">UI/UX</span>
-      <span class="skill-tag">响应式设计</span>
-      <span class="skill-tag">交互动效</span>
-    </section>
+    </div>
 
     <!-- 页脚 -->
-    <footer class="footer-note">
-      <p>© <span data-year>2025</span> 林墨 · 用心设计 &amp; 编码 · <a href="#">下载简历</a></p>
+    <footer class="footer">
+        <p>© 2026 Leleo Style · 灵感来源于 <a href="https://www.leleo.top" target="_blank">leleo.top</a></p>
     </footer>
-  </main>
 
-  <!-- 轻提示 -->
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script>
+        // 粒子生成
+        (function createParticles() {
+            const container = document.getElementById('particles');
+            const count = 40;
 
-  <script>
-    (function () {
-      'use strict';
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (8 + Math.random() * 12) + 's';
+                particle.style.animationDelay = (Math.random() * 10) + 's';
+                particle.style.width = (1 + Math.random() * 3) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        })();
 
-      /* ==========================================================
-         配置区（唯一数据源，改这里就够了）
-         ========================================================== */
-      var BG_IMAGES = [
-        'assets/images/bg/1.webp',
-        'assets/images/bg/2.webp',
-        'assets/images/bg/3.webp',
-        
-      ];
-      var MOBILE_BREAKPOINT = 768;
-      var THEME_KEY = 'linmo-theme';
+        // 音乐播放器模拟
+        (function musicPlayer() {
+            const playBtn = document.getElementById('playBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressFill = document.getElementById('progressFill');
+            const currentTimeEl = document.getElementById('currentTime');
+            const albumArt = document.getElementById('albumArt');
 
-      var root = document.documentElement;
-      var body = document.body;
-      var mqMobile = window.matchMedia('(max-width: ' + MOBILE_BREAKPOINT + 'px)');
+            let isPlaying = true;
+            let progress = 35; // 百分比
+            let intervalId = null;
 
-      /* ==========================================================
-         1. 主题切换
-         ========================================================== */
-      var themeToggle = document.querySelector('.theme-toggle');
-      var themeIcon = themeToggle && themeToggle.querySelector('.theme-toggle__icon');
+            const songs = [
+                { title: 'Starry Sky', artist: 'Maple暖枫', duration: '3:23' },
+                { title: '时落叶影', artist: 'Maple暖枫', duration: '4:05' },
+                { title: 'WIND LINER', artist: 'DAISHI DANCE', duration: '3:48' },
+                { title: '夏野与暗恋', artist: '闫东林', duration: '3:12' },
+                { title: 'Glassy Sky', artist: 'KAGWZ', duration: '4:22' }
+            ];
+            let currentIndex = 0;
 
-      function syncThemeUI(theme) {
-        if (!themeToggle) return;
-        var isDark = theme === 'dark';
-        if (themeIcon) themeIcon.textContent = isDark ? '☀️' : '🌙';
-        var label = isDark ? '切换到浅色模式' : '切换到深色模式';
-        themeToggle.setAttribute('aria-label', label);
-        themeToggle.setAttribute('title', label);
-      }
+            function formatTime(seconds) {
+                const m = Math.floor(seconds / 60);
+                const s = Math.floor(seconds % 60);
+                return m + ':' + (s < 10 ? '0' : '') + s;
+            }
 
-      function setTheme(theme, persist) {
-        root.dataset.theme = theme;
-        syncThemeUI(theme);
+            function updateProgress() {
+                if (isPlaying) {
+                    progress += 0.15;
+                    if (progress >= 100) {
+                        progress = 0;
+                        nextSong();
+                    }
+                    progressFill.style.width = progress + '%';
 
-        var meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', theme === 'dark' ? '#0d1420' : '#0a1423');
+                    // 根据进度更新显示时间（模拟）
+                    const totalSec = 203; // 3:23
+                    const currentSec = Math.floor(totalSec * progress / 100);
+                    currentTimeEl.textContent = formatTime(currentSec);
+                }
+            }
 
-        if (persist) {
-          try { localStorage.setItem(THEME_KEY, theme); } catch (e) { /* 忽略 */ }
-        }
-      }
+            function startInterval() {
+                if (intervalId) clearInterval(intervalId);
+                intervalId = setInterval(updateProgress, 100);
+            }
 
-      // 初始同步（head 中的内联脚本已提前写好 data-theme）
-      setTheme(root.dataset.theme || 'light', false);
+            function nextSong() {
+                currentIndex = (currentIndex + 1) % songs.length;
+                updateSongInfo();
+                progress = 0;
+                progressFill.style.width = '0%';
+            }
 
-      if (themeToggle) {
-        themeToggle.addEventListener('click', function () {
-          setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark', true);
-        });
-      }
+            function prevSong() {
+                currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+                updateSongInfo();
+                progress = 0;
+                progressFill.style.width = '0%';
+            }
 
-      /* ==========================================================
-         2. 桌面端拼图背景（预加载 + 淡入 + 失败兜底）
-         ========================================================== */
-      var pieces = document.querySelectorAll('.bg-piece');
+            function updateSongInfo() {
+                const song = songs[currentIndex];
+                document.querySelector('.music-title').textContent = song.title;
+                document.querySelector('.music-artist').textContent = song.artist;
+                document.getElementById('totalTime').textContent = song.duration;
+                // 更新当前时间显示
+                currentTimeEl.textContent = '0:00';
+            }
 
-      Array.prototype.forEach.call(pieces, function (piece, index) {
-        var src = BG_IMAGES[index % BG_IMAGES.length];
-        var probe = new Image();
-
-        probe.onload = function () {
-          piece.style.backgroundImage = 'url("' + src + '")';
-          piece.classList.add('is-loaded');
-        };
-        probe.onerror = function () {
-          // 保留 .bg-collage 的兜底渐变，不显示破图
-          console.warn('[背景] 桌面拼图加载失败：' + src);
-        };
-        probe.src = src;
-      });
-
-      /* ==========================================================
-         3. 移动端随机背景
-         ========================================================== */
-      var lastIndex = -1;
-
-      function applyMobileBackground() {
-        var index = Math.floor(Math.random() * BG_IMAGES.length);
-
-        // 避免连续两次抽到同一张
-        if (BG_IMAGES.length > 1 && index === lastIndex) {
-          index = (index + 1) % BG_IMAGES.length;
-        }
-        lastIndex = index;
-
-        var src = BG_IMAGES[index];
-        var probe = new Image();
-
-        probe.onload = function () {
-          body.style.setProperty('--mobile-bg', 'url("' + src + '")');
-          body.classList.add('has-bg-image');
-          console.log('📱 移动端随机背景已应用：' + src);
-        };
-        probe.onerror = function () {
-          body.classList.remove('has-bg-image');
-          console.warn('[背景] 移动端背景加载失败：' + src);
-        };
-        probe.src = src;
-      }
-
-      function handleViewportChange(event) {
-        if (event.matches) {
-          applyMobileBackground();
-        } else {
-          // 回到桌面端：清理移动端背景，避免多余请求 / 样式残留
-          body.classList.remove('has-bg-image');
-          body.style.removeProperty('--mobile-bg');
-        }
-      }
-
-      if (typeof mqMobile.addEventListener === 'function') {
-        mqMobile.addEventListener('change', handleViewportChange);
-      } else if (typeof mqMobile.addListener === 'function') {
-        mqMobile.addListener(handleViewportChange); // 兼容旧版 Safari
-      }
-
-      if (mqMobile.matches) {
-        applyMobileBackground();
-      }
-
-      /* ==========================================================
-         4. Toast 轻提示
-         ========================================================== */
-      var toast = document.getElementById('toast');
-      var toastTimer = null;
-
-      function showToast(message) {
-        if (!toast) return;
-        toast.textContent = message;
-        toast.classList.add('is-visible');
-        clearTimeout(toastTimer);
-        toastTimer = setTimeout(function () {
-          toast.classList.remove('is-visible');
-        }, 2000);
-      }
-
-      /* ==========================================================
-         5. 复制到剪贴板（含降级方案）
-         ========================================================== */
-      function copyText(text) {
-        if (navigator.clipboard && window.isSecureContext) {
-          return navigator.clipboard.writeText(text);
-        }
-        return new Promise(function (resolve, reject) {
-          var ta = document.createElement('textarea');
-          ta.value = text;
-          ta.setAttribute('readonly', '');
-          ta.style.position = 'fixed';
-          ta.style.top = '-1000px';
-          ta.style.opacity = '0';
-          document.body.appendChild(ta);
-          ta.select();
-          ta.setSelectionRange(0, ta.value.length);
-          try {
-            document.execCommand('copy') ? resolve() : reject(new Error('execCommand failed'));
-          } catch (err) {
-            reject(err);
-          } finally {
-            document.body.removeChild(ta);
-          }
-        });
-      }
-
-      Array.prototype.forEach.call(
-        document.querySelectorAll('[data-copy]'),
-        function (el) {
-          el.addEventListener('click', function (event) {
-            event.preventDefault();
-            var value = el.getAttribute('data-copy');
-
-            copyText(value).then(function () {
-              showToast('邮箱已复制：' + value);
-            }).catch(function () {
-              showToast('复制失败，请手动复制');
+            playBtn.addEventListener('click', () => {
+                isPlaying = !isPlaying;
+                playBtn.textContent = isPlaying ? '⏸' : '▶';
+                albumArt.classList.toggle('spinning', isPlaying);
+                if (isPlaying) {
+                    startInterval();
+                } else {
+                    clearInterval(intervalId);
+                }
             });
-          });
-        }
-      );
 
-      /* ==========================================================
-         6. 占位链接：阻止跳转并给出反馈
-         ========================================================== */
-      Array.prototype.forEach.call(
-        document.querySelectorAll('a[href="#"]'),
-        function (link) {
-          link.addEventListener('click', function (event) {
-            event.preventDefault();
-            showToast('演示链接：' + link.textContent.trim());
-          });
-        }
-      );
+            prevBtn.addEventListener('click', () => {
+                prevSong();
+            });
 
-      /* ==========================================================
-         7. 页脚年份自动更新
-         ========================================================== */
-      var yearEl = document.querySelector('[data-year]');
-      if (yearEl) {
-        yearEl.textContent = String(new Date().getFullYear());
-      }
+            nextBtn.addEventListener('click', () => {
+                nextSong();
+            });
 
-      /* ==========================================================
-         8. 完成
-         ========================================================== */
-      console.log('%c✨ 林墨 · 作品集已加载', 'color:#3a7bd5;font-weight:600;');
-    })();
-  </script>
+            // 点击进度条跳转
+            document.getElementById('progressBar').addEventListener('click', (e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                progress = (clickX / rect.width) * 100;
+                progressFill.style.width = progress + '%';
+            });
+
+            // 启动
+            startInterval();
+        })();
+
+        // 滚动入场动画
+        (function scrollReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.project-card, .music-player, .section-title').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(24px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        })();
+    </script>
 </body>
 </html>
