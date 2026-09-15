@@ -1,51 +1,593 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <!-- 适配手机屏幕 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的第一个网页</title>
-    <style>
-        /* 简单样式 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: "Microsoft Yahei", sans-serif;
-            background-color: #f5f7fa;
-            color: #333;
-            padding: 40px 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        }
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 16px;
-        }
-        p {
-            line-height: 1.8;
-            margin-bottom: 12px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人作品集 · 简约风格</title>
+  <style>
+    /* 全局重置与基础样式 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f9fafc;
+      --card: #ffffff;
+      --text-primary: #1e2b3c;
+      --text-secondary: #4a5b6e;
+      --accent: #3a7bd5;
+      --accent-light: #e9f0fe;
+      --border-light: #eef2f6;
+      --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.02), 0 2px 6px rgba(0, 0, 0, 0.02);
+      --shadow-hover: 0 20px 30px -10px rgba(0, 20, 40, 0.1);
+      --radius: 20px;
+      --radius-sm: 12px;
+      --transition: all 0.25s ease;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft Yahei', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      padding: 2rem 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 优雅的容器 */
+    .portfolio {
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* 主卡片 */
+    .main-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      padding: 2.5rem 2.5rem 3rem;
+      transition: var(--transition);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(2px);
+    }
+
+    /* 头部区域 */
+    .profile-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .avatar-wrapper {
+      flex-shrink: 0;
+      width: 100px;
+      height: 100px;
+      border-radius: 32%;
+      background: linear-gradient(135deg, #3a7bd5, #8ca9e0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2.6rem;
+      font-weight: 500;
+      box-shadow: 0 12px 18px -8px rgba(58, 123, 213, 0.3);
+      transition: var(--transition);
+    }
+
+    .avatar-wrapper:hover {
+      transform: scale(1.02);
+      border-radius: 40%;
+    }
+
+    .intro {
+      flex: 1;
+    }
+
+    .intro .greeting {
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .intro h1 {
+      font-size: 2.8rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: #0f1a2c;
+      margin-bottom: 0.5rem;
+    }
+
+    .intro .tagline {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 550px;
+      margin-bottom: 1.25rem;
+      font-weight: 400;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    .contact-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0.45rem 1rem;
+      background: var(--bg);
+      border-radius: 40px;
+      border: 1px solid var(--border-light);
+      transition: var(--transition);
+      font-weight: 500;
+    }
+
+    .contact-links a:hover {
+      background: var(--accent-light);
+      color: var(--accent);
+      border-color: transparent;
+      transform: translateY(-2px);
+    }
+
+    /* 技能标签栏 */
+    .skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 0.8rem;
+      margin: 2.5rem 0 2rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .skill-tag {
+      background: #f2f5f9;
+      color: #2c3e50;
+      padding: 0.45rem 1.2rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      transition: var(--transition);
+      border: 1px solid transparent;
+    }
+
+    .skill-tag:hover {
+      background: white;
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 6px 14px rgba(58, 123, 213, 0.12);
+      transform: translateY(-2px);
+    }
+
+    /* 作品集标题 */
+    .section-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin: 3rem 0 1.8rem;
+    }
+
+    .section-title h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #0b1a2b;
+    }
+
+    .section-title span {
+      font-size: 0.9rem;
+      color: var(--accent);
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    /* 项目网格 */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.8rem;
+    }
+
+    /* 卡片设计 */
+    .project-card {
+      background: var(--card);
+      border-radius: var(--radius-sm);
+      padding: 1.6rem 1.5rem 1.8rem;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 0;
+      background: linear-gradient(to bottom, #3a7bd5, #7fa9e8);
+      transition: var(--transition);
+      border-radius: 4px 0 0 4px;
+    }
+
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+      border-color: transparent;
+    }
+
+    .project-card:hover::after {
+      height: 100%;
+    }
+
+    .project-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      line-height: 1;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent-light);
+      border-radius: 14px;
+      color: var(--accent);
+      transition: var(--transition);
+    }
+
+    .project-card:hover .project-icon {
+      background: var(--accent);
+      color: white;
+      border-radius: 16px;
+    }
+
+    .project-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+      color: #0b1a2b;
+    }
+
+    .project-card p {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 1.4rem;
+      flex: 1;
+    }
+
+    .project-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #6b7e94;
+      border-top: 1px solid var(--border-light);
+      padding-top: 1rem;
+      margin-top: auto;
+    }
+
+    .project-meta .tech {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .project-meta .tech span {
+      background: #eef3f9;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #2e4a6b;
+    }
+
+    /* 页脚 */
+    .footer-note {
+      margin-top: 2.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #8a9aa9;
+      letter-spacing: 0.2px;
+      border-top: 1px solid var(--border-light);
+      padding-top: 1.8rem;
+    }
+
+    .footer-note a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer-note a:hover {
+      text-decoration: underline;
+    }
+
+    /* 移动端优化 */
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem 0.75rem;
+      }
+
+      .main-card {
+        padding: 1.8rem 1.25rem 2.2rem;
+        border-radius: 24px;
+      }
+
+      .profile-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.2rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .avatar-wrapper {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+        border-radius: 28%;
+      }
+
+      .intro h1 {
+        font-size: 2.1rem;
+      }
+
+      .intro .tagline {
+        font-size: 1rem;
+      }
+
+      .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+        margin: 2rem 0 1.2rem;
+      }
+
+      .section-title h2 {
+        font-size: 1.5rem;
+      }
+
+      .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+      }
+
+      .project-card {
+        padding: 1.4rem 1.2rem 1.5rem;
+      }
+    }
+
+    /* 极简滚动条 */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #eef2f6;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 8px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a0b3c9;
+    }
+
+    /* 细腻的微交互 */
+    .project-card:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+
+    /* 可选：淡入动画 */
+    .fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>欢迎来到网页</h1>
-        <p>这是一个基础网页示例，包含HTML、CSS。</p>
-        <p>可以在这里写你的内容。</p>
-    </div>
+  <div class="portfolio">
+    <!-- 主要卡片 - 包含所有内容 -->
+    <div class="main-card fade-in">
+      <!-- 个人资料区 -->
+      <div class="profile-header">
+        <div class="avatar-wrapper" aria-label="头像，显示名字缩写">
+          <span>LM</span>
+        </div>
+        <div class="intro">
+          <div class="greeting">✦ 创意开发者</div>
+          <h1>林 墨</h1>
+          <p class="tagline">
+            热爱构建简洁、优雅且富有交互感的数字体验。<br>
+            专注于前端开发与设计，追求代码与美学的平衡。
+          </p>
+          <div class="contact-links">
+            <a href="#" title="电子邮箱">✉️ hello@linmo.design</a>
+            <a href="#" title="GitHub">🐙 github.com/linmo</a>
+            <a href="#" title="作品集站点">🔗 个人作品集</a>
+          </div>
+        </div>
+      </div>
 
-    <script>
-        // JS简单示例
-        console.log("网页加载完成");
-    </script>
+      <!-- 技能标签 -->
+      <div class="skills" aria-label="技能标签">
+        <span class="skill-tag">HTML5</span>
+        <span class="skill-tag">CSS3</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">React</span>
+        <span class="skill-tag">Vue</span>
+        <span class="skill-tag">Figma</span>
+        <span class="skill-tag">UI/UX</span>
+        <span class="skill-tag">响应式设计</span>
+        <span class="skill-tag">交互动效</span>
+      </div>
+
+      <!-- 作品集标题 -->
+      <div class="section-title">
+        <h2>精选作品</h2>
+        <span>2025 · 项目选辑</span>
+      </div>
+
+      <!-- 作品网格 -->
+      <div class="projects-grid">
+        <!-- 项目 1 -->
+        <a href="#" class="project-card">
+          <div class="project-icon">✦</div>
+          <h3>极简天气</h3>
+          <p>实时天气应用，动态背景与细腻的微交互，支持多城市切换。注重可读性与视觉舒适度。</p>
+          <div class="project-meta">
+            <div class="tech">
+              <span>Vue</span>
+              <span>OpenWeather</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- 项目 2 -->
+        <a href="#" class="project-card">
+          <div class="project-icon">◍</div>
+          <h3>灵感笔记</h3>
+          <p>一款轻量级 Markdown 笔记工具，支持实时预览、暗色模式与标签管理，专注于书写体验。</p>
+          <div class="project-meta">
+            <div class="tech">
+              <span>React</span>
+              <span>IndexedDB</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- 项目 3 -->
+        <a href="#" class="project-card">
+          <div class="project-icon">⌘</div>
+          <h3>设计系统</h3>
+          <p>一套可复用的组件库与设计令牌，包含按钮、表单、卡片等，提升团队协作效率。</p>
+          <div class="project-meta">
+            <div class="tech">
+              <span>SCSS</span>
+              <span>Storybook</span>
+            </div>
+          </div>
+        </a>
+
+        <!-- 项目 4 -->
+        <a href="#" class="project-card">
+          <div class="project-icon">↯</div>
+          <h3>数据仪表板</h3>
+          <p>可视化仪表板界面，使用图表展示销售趋势与用户行为，支持响应式布局与主题切换。</p>
+          <div class="project-meta">
+            <div class="tech">
+              <span>D3.js</span>
+              <span>Flex</span>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <!-- 页脚区，包含一些信息 -->
+      <div class="footer-note">
+        <p>© 2025 林墨 · 用心设计 & 编码 · <a href="#">下载简历</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // 简单的控制台欢迎信息，同时为卡片添加轻微的延迟载入动画
+      console.log("✨ 欢迎来到林墨的个人作品集");
+      
+      // 可选：为项目卡片添加轻微的交错动画效果（逐次出现）
+      const cards = document.querySelectorAll('.project-card');
+      cards.forEach((card, index) => {
+        // 添加一点自定义属性或直接设置延迟
+        card.style.opacity = '0';
+        card.style.animation = `fadeIn 0.5s ease-out ${index * 0.08}s forwards`;
+      });
+
+      // 同时保证父卡片已显示
+      // 从main-card动画中，我们可能不想让它的子元素闪烁，所以针对卡片单独设置
+      // 但注意main-card已有fade-in，如果这里再设置内部卡片会导致重叠效果，调低透明度其实没问题
+      // 更稳健：把main-card的动画暂时移除？但是保留视觉效果也可。改为只让卡片opacity从0开始
+      // 但父级已经执行了淡入，为了避免冲突，我们可以延迟一点点
+      // 更好的方式：用JS在页面加载后给卡片设置动画，同时保证父级动画结束后卡片也是显示状态
+      // 但由于父级动画从透明到不透明，子元素如果也从0开始会有很好的交错感。
+      
+      // 改进：如果希望卡片在父级淡入后再出现，可以使用setTimeout让卡片在父级动画结束后再显示
+      // 但父级动画持续时间0.5s，如果设置cards在0.5s之后动画，可能会闪一下。
+      // 简单方案：直接使用CSS动画延迟，父级淡入和卡片动画同时进行，由于父级从透明到1，卡片也类似，会有层次感。
+      // 但为了避免文字在父级透明时也透明，这里保留卡片初始不可见并立即开始动画。
+      // 实际上卡片的opacity:0会覆盖父级opacity:1的视觉效果，所以父级淡入可能看不见。修正：让父级.fade-in先不应用动画？或者调整。
+      
+      // 重新思考：父级卡片已经有.fade-in类，动画结束后opacity:1。若同时给子元素设置opacity:0，父级不可见时子元素不可见，父级可见后子元素才开始动画，没问题。
+      // 但是父级动画期间子元素也是不可见的（因为opacity:0），父级淡入后子元素开始显示，会有延迟动画的感觉，不错。
+      // 唯一的冲突是父级和子元素都在0.5s内变化，可能略显复杂。但我们保留这个效果，让页面有层次。
+      
+      // 如果用户不喜欢，也可以去掉父级的fade-in类，只保留卡片动画。
+      // 这里我决定保留父级fade-in，同时卡片使用错峰动画，效果是很优雅的。
+      
+      // 确保卡片动画在父级淡入之后不会因为父级透明而消失：父级最终opacity为1。
+      // 但初始父级opacity从0到1，而子元素opacity从0到1，所以整体一开始是透明的，然后慢慢显现，可以。
+      
+      // 现在修正一下卡片的动画填充模式，避免动画结束后回到opacity:0
+      // 上面已经用了 forwards，很好。
+
+      // 但对于不支持动画的浏览器，做一下优雅降级
+      if (!('animate' in document.documentElement)) {
+        cards.forEach(card => {
+          card.style.opacity = '1';
+          card.style.animation = 'none';
+        });
+      }
+
+      // 检测是否支持CSS动画的简单处理
+      // 在移动端点击卡片可以有点击反馈（由CSS处理）
+
+      // 给所有链接添加阻止默认跳转（仅用于演示，真实作品集可以保留），避免点击跳转到空链接
+      // 但为了演示，只阻止带#的链接跳转，同时不干扰用户可能想复制链接
+      const allLinks = document.querySelectorAll('a[href="#"]');
+      allLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          // 提供一个简单的反馈，也许可以改成toast，但不必
+          // 这里只是避免页面刷新/跳转
+          console.log('链接点击: ', link.textContent.trim());
+        });
+      });
+
+      // 添加一点小小的彩蛋：悬停头像时改变缩写字母颜色？其实CSS已处理
+    })();
+  </script>
 </body>
 </html>
