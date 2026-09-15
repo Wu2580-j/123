@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>林墨 · 聚合搜索作品集</title>
+  <title>林墨 · 作品集</title>
   <style>
     /* ===== 全局重置与变量 ===== */
     * {
@@ -28,9 +28,60 @@
       --transition: all 0.25s ease;
     }
 
+    /* ===== 背景拼图容器（桌面端四图并排，移动端随机单图） ===== */
+    .bg-collage {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .bg-collage .bg-piece {
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: transform 8s ease;
+    }
+
+    /* 微妙的动态效果 */
+    .bg-collage:hover .bg-piece {
+      transform: scale(1.02);
+    }
+
+    /* 背景遮罩层：让文字清晰，同时保留图片可见度 */
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: rgba(10, 20, 35, 0.45); /* 调整0.3~0.55控制明暗 */
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+    }
+
+    /* 移动端：隐藏拼图，显示单张随机背景 */
+    @media (max-width: 768px) {
+      .bg-collage {
+        display: none; /* 桌面拼图隐藏 */
+      }
+      /* 移动端随机背景由 JS 动态设置到 body 的伪元素或直接设置 body 背景 */
+      body {
+        background-attachment: scroll;
+      }
+      /* 移动端遮罩稍微调深，保证文字可读 */
+      .bg-overlay {
+        background: rgba(10, 20, 35, 0.5);
+        backdrop-filter: blur(4px);
+      }
+    }
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft Yahei', sans-serif;
-      background-color: var(--bg);
       color: var(--text-primary);
       line-height: 1.6;
       padding: 2rem 1.5rem;
@@ -39,6 +90,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
     /* ===== 主容器 ===== */
@@ -46,16 +98,20 @@
       max-width: 1100px;
       width: 100%;
       margin: 0 auto;
+      position: relative;
+      z-index: 1;
     }
 
+    /* ===== 主卡片：半透明毛玻璃 ===== */
     .main-card {
-      background: var(--card);
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
       padding: 2.5rem 2.5rem 3rem;
       transition: var(--transition);
       border: 1px solid rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(2px);
     }
 
     /* ===== 头部区域 ===== */
@@ -82,11 +138,13 @@
       box-shadow: 0 12px 18px -8px rgba(58, 123, 213, 0.3);
       transition: var(--transition);
       cursor: pointer;
+      opacity: 0.92;
     }
 
     .avatar-wrapper:hover {
       transform: scale(1.02);
       border-radius: 40%;
+      opacity: 1;
     }
 
     .intro {
@@ -134,11 +192,12 @@
       color: var(--text-secondary);
       text-decoration: none;
       padding: 0.45rem 1rem;
-      background: var(--bg);
+      background: rgba(249, 250, 252, 0.7);
       border-radius: 40px;
       border: 1px solid var(--border-light);
       transition: var(--transition);
       font-weight: 500;
+      opacity: 0.9;
     }
 
     .contact-links a:hover {
@@ -146,6 +205,7 @@
       color: var(--accent);
       border-color: transparent;
       transform: translateY(-2px);
+      opacity: 1;
     }
 
     /* ===== 技能标签 ===== */
@@ -155,11 +215,11 @@
       gap: 0.6rem 0.8rem;
       margin: 1.5rem 0 2rem;
       padding-top: 0.75rem;
-      border-top: 1px solid var(--border-light);
+      border-top: 1px solid rgba(238, 242, 246, 0.6);
     }
 
     .skill-tag {
-      background: #f2f5f9;
+      background: rgba(242, 245, 249, 0.75);
       color: #2c3e50;
       padding: 0.45rem 1.2rem;
       border-radius: 30px;
@@ -168,6 +228,7 @@
       letter-spacing: 0.2px;
       transition: var(--transition);
       border: 1px solid transparent;
+      opacity: 0.88;
     }
 
     .skill-tag:hover {
@@ -176,6 +237,7 @@
       color: var(--accent);
       box-shadow: 0 6px 14px rgba(58, 123, 213, 0.12);
       transform: translateY(-2px);
+      opacity: 1;
     }
 
     /* ===== 区域标题 ===== */
@@ -200,112 +262,6 @@
       letter-spacing: 0.3px;
     }
 
-    /* ===== 聚合搜索预览模块 ===== */
-    .search-preview {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 1.5rem;
-      background: linear-gradient(135deg, #f0f6ff, #ffffff);
-      border-radius: var(--radius-sm);
-      padding: 1.5rem 1.8rem;
-      margin: 0.5rem 0 0.5rem;
-      border: 1px solid var(--border-light);
-      transition: var(--transition);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .search-preview:hover {
-      border-color: var(--accent);
-      box-shadow: 0 15px 25px -12px rgba(58, 123, 213, 0.2);
-      transform: translateY(-3px);
-    }
-
-    .search-preview-icon {
-      width: 62px;
-      height: 62px;
-      background: var(--accent);
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 2rem;
-      flex-shrink: 0;
-      box-shadow: 0 10px 18px -8px rgba(58, 123, 213, 0.4);
-      transition: var(--transition);
-    }
-
-    .search-preview:hover .search-preview-icon {
-      border-radius: 22px;
-      transform: scale(1.02) rotate(-2deg);
-      background: var(--accent-dark);
-    }
-
-    .search-preview-content {
-      flex: 1;
-    }
-
-    .search-preview-content h3 {
-      font-size: 1.35rem;
-      font-weight: 600;
-      color: #0b1a2b;
-      margin-bottom: 0.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .search-preview-content h3 .badge {
-      font-size: 0.7rem;
-      font-weight: 600;
-      background: #e0edff;
-      color: var(--accent);
-      padding: 0.2rem 0.8rem;
-      border-radius: 30px;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
-    }
-
-    .search-preview-content p {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      margin-bottom: 0.5rem;
-    }
-
-    .search-preview-engines {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .engine-dot {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      font-size: 0.75rem;
-      background: white;
-      padding: 0.25rem 0.8rem;
-      border-radius: 20px;
-      border: 1px solid var(--border-light);
-      color: #4a5b6e;
-      font-weight: 500;
-    }
-
-    .search-preview-arrow {
-      font-size: 1.6rem;
-      color: var(--accent);
-      opacity: 0.7;
-      transition: var(--transition);
-    }
-
-    .search-preview:hover .search-preview-arrow {
-      transform: translateX(6px);
-      opacity: 1;
-    }
-
     /* ===== 项目网格 ===== */
     .projects-grid {
       display: grid;
@@ -314,11 +270,12 @@
     }
 
     .project-card {
-      background: var(--card);
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(6px);
       border-radius: var(--radius-sm);
       padding: 1.6rem 1.5rem 1.8rem;
-      border: 1px solid var(--border-light);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      border: 1px solid rgba(238, 242, 246, 0.8);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
       transition: var(--transition);
       display: flex;
       flex-direction: column;
@@ -327,6 +284,7 @@
       color: inherit;
       position: relative;
       overflow: hidden;
+      opacity: 0.94;
     }
 
     .project-card::after {
@@ -345,6 +303,8 @@
       transform: translateY(-6px);
       box-shadow: var(--shadow-hover);
       border-color: transparent;
+      background: rgba(255, 255, 255, 0.98);
+      opacity: 1;
     }
 
     .project-card:hover::after {
@@ -360,16 +320,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--accent-light);
+      background: rgba(233, 240, 254, 0.9);
       border-radius: 14px;
       color: var(--accent);
       transition: var(--transition);
+      opacity: 0.9;
     }
 
     .project-card:hover .project-icon {
       background: var(--accent);
       color: white;
       border-radius: 16px;
+      opacity: 1;
     }
 
     .project-card h3 {
@@ -395,7 +357,7 @@
       font-size: 0.8rem;
       font-weight: 500;
       color: #6b7e94;
-      border-top: 1px solid var(--border-light);
+      border-top: 1px solid rgba(238, 242, 246, 0.6);
       padding-top: 1rem;
       margin-top: auto;
     }
@@ -406,7 +368,7 @@
     }
 
     .project-meta .tech span {
-      background: #eef3f9;
+      background: rgba(238, 243, 249, 0.8);
       padding: 0.2rem 0.7rem;
       border-radius: 20px;
       font-size: 0.7rem;
@@ -421,7 +383,7 @@
       font-size: 0.85rem;
       color: #8a9aa9;
       letter-spacing: 0.2px;
-      border-top: 1px solid var(--border-light);
+      border-top: 1px solid rgba(238, 242, 246, 0.6);
       padding-top: 1.8rem;
     }
 
@@ -435,299 +397,8 @@
       text-decoration: underline;
     }
 
-    /* ============================================================
-       聚合搜索交互面板（模态覆盖层）
-       ============================================================ */
-    .search-modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(10, 20, 40, 0.5);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-
-    .search-modal-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .search-modal {
-      background: var(--card);
-      max-width: 680px;
-      width: 100%;
-      border-radius: 28px;
-      box-shadow: 0 40px 70px -20px rgba(0, 0, 0, 0.4);
-      padding: 2rem 2rem 2.2rem;
-      transform: scale(0.92) translateY(20px);
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-
-    .search-modal-overlay.active .search-modal {
-      transform: scale(1) translateY(0);
-    }
-
-    /* 模态头部 */
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-    }
-
-    .modal-header h2 {
-      font-size: 1.5rem;
-      font-weight: 650;
-      color: #0b1a2b;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .modal-header h2 span {
-      font-size: 0.8rem;
-      background: var(--accent-light);
-      color: var(--accent);
-      padding: 0.2rem 0.8rem;
-      border-radius: 30px;
-      font-weight: 600;
-    }
-
-    .modal-close {
-      background: transparent;
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      cursor: pointer;
-      color: #6b7e94;
-      transition: var(--transition);
-    }
-
-    .modal-close:hover {
-      background: #f1f5f9;
-      color: #1e2b3c;
-      transform: rotate(90deg);
-    }
-
-    /* 搜索框 */
-    .search-input-wrapper {
-      display: flex;
-      align-items: center;
-      background: #f2f6fc;
-      border-radius: 60px;
-      padding: 0.2rem 0.2rem 0.2rem 1.2rem;
-      border: 2px solid transparent;
-      transition: var(--transition);
-      margin-bottom: 1.5rem;
-    }
-
-    .search-input-wrapper:focus-within {
-      border-color: var(--accent);
-      background: white;
-      box-shadow: 0 0 0 4px rgba(58, 123, 213, 0.1);
-    }
-
-    .search-input-wrapper input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      padding: 0.9rem 0.5rem;
-      font-size: 1rem;
-      font-family: inherit;
-      outline: none;
-      color: var(--text-primary);
-      min-width: 0;
-    }
-
-    .search-input-wrapper input::placeholder {
-      color: #a0b3c9;
-    }
-
-    .search-btn {
-      background: var(--accent);
-      border: none;
-      border-radius: 40px;
-      padding: 0.75rem 1.8rem;
-      color: white;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-      transition: var(--transition);
-      font-family: inherit;
-      white-space: nowrap;
-      box-shadow: 0 8px 16px -6px rgba(58, 123, 213, 0.4);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    .search-btn:hover {
-      background: var(--accent-dark);
-      transform: scale(1.02);
-      box-shadow: 0 12px 22px -8px rgba(58, 123, 213, 0.5);
-    }
-
-    .search-btn:active {
-      transform: scale(0.98);
-    }
-
-    /* 搜索引擎选择器 */
-    .engine-selector {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.7rem;
-      margin-bottom: 1.8rem;
-    }
-
-    .engine-option {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.55rem 1.2rem;
-      border-radius: 40px;
-      background: #f2f6fc;
-      border: 1.5px solid transparent;
-      cursor: pointer;
-      transition: var(--transition);
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      user-select: none;
-    }
-
-    .engine-option:hover {
-      background: #e9f0fe;
-      color: var(--accent);
-    }
-
-    .engine-option.selected {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-      box-shadow: 0 8px 16px -8px rgba(58, 123, 213, 0.5);
-    }
-
-    .engine-option .engine-icon {
-      font-size: 1.1rem;
-    }
-
-    /* 快捷提示 */
-    .search-hint {
-      font-size: 0.8rem;
-      color: #8a9aa9;
-      text-align: center;
-      margin-bottom: 1.6rem;
-    }
-
-    .search-hint kbd {
-      background: #eef2f6;
-      padding: 0.1rem 0.5rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-family: inherit;
-      border: 1px solid #dbe2eb;
-    }
-
-    /* 聚合结果列表 */
-    .aggregate-results {
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-      max-height: 260px;
-      overflow-y: auto;
-      padding-right: 0.2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .result-item {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.9rem 1.2rem;
-      background: #f9fbfe;
-      border-radius: 14px;
-      border: 1px solid var(--border-light);
-      transition: var(--transition);
-      cursor: pointer;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .result-item:hover {
-      background: white;
-      border-color: var(--accent);
-      box-shadow: 0 6px 14px -6px rgba(58, 123, 213, 0.15);
-      transform: translateX(4px);
-    }
-
-    .result-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: var(--accent-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      flex-shrink: 0;
-    }
-
-    .result-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .result-info .result-title {
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: #0b1a2b;
-      margin-bottom: 0.1rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .result-info .result-desc {
-      font-size: 0.8rem;
-      color: #6b7e94;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .result-badge {
-      font-size: 0.7rem;
-      font-weight: 600;
-      padding: 0.2rem 0.8rem;
-      border-radius: 30px;
-      background: #e0edff;
-      color: var(--accent);
-      white-space: nowrap;
-    }
-
-    /* 无结果状态 */
-    .no-results {
-      text-align: center;
-      padding: 2rem 0;
-      color: #8a9aa9;
-      font-size: 0.95rem;
-    }
-
     /* ===== 响应式 ===== */
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       body {
         padding: 1rem 0.75rem;
       }
@@ -735,6 +406,7 @@
       .main-card {
         padding: 1.8rem 1.25rem 2.2rem;
         border-radius: 24px;
+        background: rgba(255, 255, 255, 0.85);
       }
 
       .profile-header {
@@ -770,16 +442,6 @@
         font-size: 1.5rem;
       }
 
-      .search-preview {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 1.2rem 1.2rem;
-      }
-
-      .search-preview-arrow {
-        align-self: flex-end;
-      }
-
       .projects-grid {
         grid-template-columns: 1fr;
         gap: 1.2rem;
@@ -787,29 +449,6 @@
 
       .project-card {
         padding: 1.4rem 1.2rem 1.5rem;
-      }
-
-      .search-modal {
-        padding: 1.5rem 1.2rem 1.8rem;
-        border-radius: 22px;
-      }
-
-      .search-btn {
-        padding: 0.7rem 1.2rem;
-        font-size: 0.9rem;
-      }
-
-      .search-btn span {
-        display: none;
-      }
-
-      .engine-option {
-        padding: 0.45rem 0.9rem;
-        font-size: 0.8rem;
-      }
-
-      .aggregate-results {
-        max-height: 200px;
       }
     }
 
@@ -819,7 +458,7 @@
     }
 
     ::-webkit-scrollbar-track {
-      background: #eef2f6;
+      background: rgba(238, 242, 246, 0.5);
       border-radius: 8px;
     }
 
@@ -832,14 +471,11 @@
       background: #a0b3c9;
     }
 
-    /* 焦点 */
-    .project-card:focus-visible,
-    .search-preview:focus-visible {
+    .project-card:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 4px;
     }
 
-    /* 动画 */
     .fade-in {
       animation: fadeIn 0.5s ease-out;
     }
@@ -848,19 +484,22 @@
       from { opacity: 0; transform: translateY(12px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
-    /* 模态内结果项动画 */
-    .result-item {
-      animation: slideIn 0.25s ease-out both;
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-8px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
   </style>
 </head>
 <body>
+
+  <!-- ===== 桌面端拼图背景 ===== -->
+  <div class="bg-collage" aria-hidden="true">
+    <div class="bg-piece" style="background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800');"></div>
+    <div class="bg-piece" style="background-image: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800');"></div>
+    <div class="bg-piece" style="background-image: url('https://images.unsplash.com/photo-1505142468610-359e7d316be0?q=80&w=800');"></div>
+    <div class="bg-piece" style="background-image: url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=800');"></div>
+  </div>
+
+  <!-- 背景遮罩 -->
+  <div class="bg-overlay" aria-hidden="true"></div>
+
+  <!-- ===== 主内容 ===== -->
   <div class="portfolio">
     <div class="main-card fade-in">
 
@@ -897,32 +536,7 @@
         <span class="skill-tag">交互动效</span>
       </div>
 
-      <!-- ===== 聚合搜索预览 (点击弹出交互面板) ===== -->
-      <div class="section-title">
-        <h2>聚合搜索</h2>
-        <span>一键搜索全网</span>
-      </div>
-
-      <div class="search-preview" id="searchPreview" role="button" tabindex="0" aria-label="打开聚合搜索面板">
-        <div class="search-preview-icon">⌕</div>
-        <div class="search-preview-content">
-          <h3>
-            Metaso 聚合搜索
-            <span class="badge">Live</span>
-          </h3>
-          <p>同时搜索 Google、百度、Bing、知乎等主流引擎，快速获取信息。</p>
-          <div class="search-preview-engines">
-            <span class="engine-dot">🔍 Google</span>
-            <span class="engine-dot">🌐 百度</span>
-            <span class="engine-dot">🅱️ Bing</span>
-            <span class="engine-dot">📘 知乎</span>
-            <span class="engine-dot">🐙 GitHub</span>
-          </div>
-        </div>
-        <div class="search-preview-arrow">→</div>
-      </div>
-
-      <!-- ===== 作品集标题 ===== -->
+      <!-- 作品集标题 -->
       <div class="section-title">
         <h2>精选作品</h2>
         <span>2025 · 项目选辑</span>
@@ -986,116 +600,54 @@
     </div>
   </div>
 
-  <!-- ===== 聚合搜索模态框 ===== -->
-  <div class="search-modal-overlay" id="searchModalOverlay" aria-hidden="true" role="dialog">
-    <div class="search-modal" id="searchModal">
-      <div class="modal-header">
-        <h2>
-          ⌕ 聚合搜索
-          <span>多引擎</span>
-        </h2>
-        <button class="modal-close" id="modalClose" aria-label="关闭搜索面板">✕</button>
-      </div>
-
-      <!-- 搜索输入框 -->
-      <div class="search-input-wrapper">
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="输入关键词，一键搜索..."
-          autocomplete="off"
-          aria-label="搜索关键词"
-        >
-        <button class="search-btn" id="searchBtn">
-          <span>搜索</span> ⌕
-        </button>
-      </div>
-
-      <!-- 搜索引擎选择器 -->
-      <div class="engine-selector" id="engineSelector">
-        <div class="engine-option selected" data-engine="google">
-          <span class="engine-icon">🔍</span> Google
-        </div>
-        <div class="engine-option" data-engine="baidu">
-          <span class="engine-icon">🌐</span> 百度
-        </div>
-        <div class="engine-option" data-engine="bing">
-          <span class="engine-icon">🅱️</span> Bing
-        </div>
-        <div class="engine-option" data-engine="zhihu">
-          <span class="engine-icon">📘</span> 知乎
-        </div>
-        <div class="engine-option" data-engine="github">
-          <span class="engine-icon">🐙</span> GitHub
-        </div>
-        <div class="engine-option" data-engine="all">
-          <span class="engine-icon">✦</span> 聚合
-        </div>
-      </div>
-
-      <div class="search-hint">
-        按 <kbd>Enter</kbd> 搜索 · 点击引擎切换 · 聚合模式同时打开多个结果
-      </div>
-
-      <!-- 聚合结果列表区域 (点击后展示快捷聚合链接) -->
-      <div class="aggregate-results" id="aggregateResults">
-        <!-- 动态内容会通过 JS 插入 -->
-      </div>
-    </div>
-  </div>
-
   <script>
     (function() {
-      console.log("✨ 林墨 · 聚合搜索作品集已加载");
+      console.log("✨ 林墨 · 作品集已加载");
 
-      // ===== DOM 元素 =====
-      const searchPreview = document.getElementById('searchPreview');
-      const searchModalOverlay = document.getElementById('searchModalOverlay');
-      const modalClose = document.getElementById('modalClose');
-      const searchInput = document.getElementById('searchInput');
-      const searchBtn = document.getElementById('searchBtn');
-      const engineSelector = document.getElementById('engineSelector');
-      const aggregateResults = document.getElementById('aggregateResults');
+      // ===== 移动端随机背景 =====
+      const isMobile = window.matchMedia('(max-width: 768px)').matches;
+      
+      if (isMobile) {
+        // 四张图片的 URL 数组（请替换为你自己的图片链接）
+        const bgImages = [
+          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800',
+          'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800',
+          'https://images.unsplash.com/photo-1505142468610-359e7d316be0?q=80&w=800',
+          'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=800'
+        ];
+        
+        // 随机选一张
+        const randomIndex = Math.floor(Math.random() * bgImages.length);
+        const selectedImage = bgImages[randomIndex];
+        
+        // 设置到 body 背景
+        document.body.style.backgroundImage = `url('${selectedImage}')`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundRepeat = 'no-repeat';
+        document.body.style.backgroundAttachment = 'scroll'; // 移动端 fixed 可能卡顿
+        
+        console.log(`📱 移动端随机背景已应用：第 ${randomIndex + 1} 张`);
+      } else {
+        // 桌面端保持拼图，不需要额外操作
+        console.log("🖥️ 桌面端拼图背景已启用");
+      }
 
-      // ===== 状态 =====
-      let currentEngine = 'google'; // 当前选中的引擎
+      // ===== 阻止空链接跳转 =====
+      document.querySelectorAll('a[href="#"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          console.log('链接点击:', link.textContent.trim());
+        });
+      });
 
-      // ===== 引擎配置 =====
-      const engines = {
-        google: {
-          name: 'Google',
-          icon: '🔍',
-          url: (q) => `https://www.google.com/search?q=${encodeURIComponent(q)}`,
-          placeholder: '使用 Google 搜索...'
-        },
-        baidu: {
-          name: '百度',
-          icon: '🌐',
-          url: (q) => `https://www.baidu.com/s?wd=${encodeURIComponent(q)}`,
-          placeholder: '使用 百度 搜索...'
-        },
-        bing: {
-          name: 'Bing',
-          icon: '🅱️',
-          url: (q) => `https://www.bing.com/search?q=${encodeURIComponent(q)}`,
-          placeholder: '使用 Bing 搜索...'
-        },
-        zhihu: {
-          name: '知乎',
-          icon: '📘',
-          url: (q) => `https://www.zhihu.com/search?type=content&q=${encodeURIComponent(q)}`,
-          placeholder: '使用 知乎 搜索...'
-        },
-        github: {
-          name: 'GitHub',
-          icon: '🐙',
-          url: (q) => `https://github.com/search?q=${encodeURIComponent(q)}`,
-          placeholder: '使用 GitHub 搜索...'
-        },
-        all: {
-          name: '聚合',
-          icon: '✦',
-          url: null, // 特殊处理
-          placeholder: '聚合搜索：同时打开多个引擎...'
-        }
-     
+      // ===== 可选：给项目卡片添加交错动画 =====
+      const cards = document.querySelectorAll('.project-card');
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.animation = `fadeIn 0.5s ease-out ${index * 0.08}s forwards`;
+      });
+    })();
+  </script>
+</body>
+</html>
