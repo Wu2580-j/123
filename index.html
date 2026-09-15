@@ -3,351 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>个人主页 · Leleo 风格</title>
-    <meta name="description" content="Leleo 的个人主页 —— 全栈开发者 · 开源爱好者 · 终身学习者">
+    <title>个人主页 · 奶娃 风格</title>
+    <meta name="description" content="奶娃 的个人主页 —— 全栈开发者 · 开源爱好者 · 终身学习者">
     <meta name="theme-color" content="#0F0F1A">
-    <meta property="og:title" content="Leleo 的个人主页">
+    <meta property="og:title" content="奶娃 的个人主页">
     <meta property="og:description" content="全栈开发者 · 开源爱好者 · 终身学习者">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="zh_CN">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary: #7C4DFF;
-            --primary-light: #B388FF;
-            --bg-dark: #0F0F1A;
-            --bg-card: rgba(25, 25, 45, 0.75);
-            --text-primary: #EAEAEA;
-            --text-secondary: #9E9EB3;
-            --border: rgba(124, 77, 255, 0.2);
-            --glow: rgba(124, 77, 255, 0.35);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ===== 背景图轮播 ===== */
-        .bg-slideshow {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -3;
-            overflow: hidden;
-        }
-
-        .bg-slide {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-        }
-
-        .bg-slide.active {
-            opacity: 1;
-        }
-
-        /* 深色遮罩，保证文字可读 */
-        .bg-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            background: rgba(15, 15, 26, 0.65);
-        }
-
-        /* 动态背景（保留光晕） */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .bg-animation::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background:
-                radial-gradient(ellipse at 20% 50%, rgba(124, 77, 255, 0.10) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(179, 136, 255, 0.07) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 80%, rgba(124, 77, 255, 0.05) 0%, transparent 50%);
-            animation: bgRotate 30s linear infinite;
-        }
-
-        @keyframes bgRotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* 粒子效果 */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: var(--primary-light);
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: floatParticle linear infinite;
-        }
-
-        @keyframes floatParticle {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 0.4; }
-            90% { opacity: 0.4; }
-            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-        }
-
-        /* 主容器 */
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 120px 24px 80px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* 头像区域 */
-        .avatar-section {
-            text-align: center;
-            margin-bottom: 48px;
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .avatar-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 24px;
-        }
-
-        .avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            font-weight: 700;
-            color: #fff;
-            position: relative;
-            z-index: 1;
-            box-shadow: 0 0 40px var(--glow);
-        }
-
-        .avatar-ring {
-            position: absolute;
-            top: -8px;
-            left: -8px;
-            right: -8px;
-            bottom: -8px;
-            border-radius: 50%;
-            border: 2px solid transparent;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light), var(--primary)) border-box;
-            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            animation: ringRotate 8s linear infinite;
-        }
-
-        @keyframes ringRotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .name {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #fff, var(--primary-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .tagline {
-            font-size: 16px;
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            font-weight: 300;
-            letter-spacing: 0.5px;
-        }
-
-        /* 社交链接 */
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-        }
-
-        .social-link {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .social-link:hover {
-            border-color: var(--primary);
-            color: var(--primary-light);
-            box-shadow: 0 0 20px var(--glow);
-            transform: translateY(-3px);
-        }
-
-        .social-link svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
-
-        /* 技能标签 */
-        .skills-section {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            animation: fadeInUp 0.8s ease-out 0.15s both;
-        }
-
-        .skill-tag {
-            padding: 8px 18px;
-            border-radius: 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            cursor: default;
-        }
-
-        .skill-tag:hover {
-            border-color: var(--primary);
-            color: var(--primary-light);
-            box-shadow: 0 0 16px var(--glow);
-            transform: translateY(-2px);
-        }
-
-        /* 页脚 */
-        .footer {
-            text-align: center;
-            padding: 40px 24px;
-            color: var(--text-secondary);
-            font-size: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            position: relative;
-            z-index: 1;
-        }
-
-        .footer a {
-            color: var(--primary-light);
-            text-decoration: none;
-        }
-
-        /* 动画 */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(24px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* 响应式 */
-        @media (max-width: 640px) {
-            .container {
-                padding: 80px 16px 60px;
-            }
-
-            .avatar {
-                width: 96px;
-                height: 96px;
-                font-size: 38px;
-            }
-
-            .name {
-                font-size: 26px;
-            }
-        }
-
-        /* 滚动条 */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 3px;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
     <!-- 背景图轮播（放在最底层） -->
     <div class="bg-slideshow">
-        <div class="bg-slide active" style="background-image: url('assets/images/bg/1.webp')"></div>
-        <div class="bg-slide" style="background-image: url('assets/images/bg/2.webp')"></div>
-        <div class="bg-slide" style="background-image: url('assets/images/bg/3.webp')"></div>
+        <div class="bg-slide active">
+            <div class="bg-slide-blur" style="background-image: url('assets/images/bg/1.webp')"></div>
+            <div class="bg-slide-sharp" style="background-image: url('assets/images/bg/1.webp')"></div>
+        </div>
+        <div class="bg-slide">
+            <div class="bg-slide-blur" style="background-image: url('assets/images/bg/2.webp')"></div>
+            <div class="bg-slide-sharp" style="background-image: url('assets/images/bg/2.webp')"></div>
+        </div>
+        <div class="bg-slide">
+            <div class="bg-slide-blur" style="background-image: url('assets/images/bg/3.webp')"></div>
+            <div class="bg-slide-sharp" style="background-image: url('assets/images/bg/3.webp')"></div>
+        </div>
     </div>
 
     <!-- 深色遮罩 -->
@@ -364,15 +47,14 @@
         <!-- 头像区域 -->
         <section class="avatar-section">
             <div class="avatar-wrapper">
-                <div class="avatar">L</div>
+                <div class="avatar"><img src="assets/images/icons/11.png" alt="奶娃的头像"></div>
                 <div class="avatar-ring"></div>
             </div>
-            <h1 class="name">Leleo</h1>
+            <h1 class="name">奶娃</h1>
             <p class="tagline">全栈开发者 · 开源爱好者 · 终身学习者</p>
             <div class="social-links">
                 <a href="#" class="social-link" title="GitHub">
-                    <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                </a>
+                    <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1。
                 <a href="#" class="social-link" title="Twitter">
                     <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                 </a>
@@ -382,54 +64,19 @@
             </div>
         </section>
 
-        <!-- 技能标签 -->
-        <section class="skills-section">
-            <span class="skill-tag">Vue.js</span>
-            <span class="skill-tag">React</span>
-            <span class="skill-tag">TypeScript</span>
-            <span class="skill-tag">Node.js</span>
-            <span class="skill-tag">Python</span>
-            <span class="skill-tag">Docker</span>
-            <span class="skill-tag">PostgreSQL</span>
-            <span class="skill-tag">Vuetify</span>
+        <!-- 常用网站链接 -->
+        <section class="links-section">
+            <h2 class="section-title">常用网站</h2>
+            <div class="links-grid" id="linksGrid"></div>
         </section>
 
     </div>
 
     <!-- 页脚 -->
     <footer class="footer">
-        <p>© 2026 Leleo Style · 灵感来源于 <a href="https://www.leleo.top" target="_blank">leleo.top</a></p>
+        <p>© 2026 奶娃 · 灵感来源于 <a href="https://www.leleo.top" target="_blank">leleo.top</a></p>
     </footer>
 
-    <script>
-        // 背景轮播
-        (function backgroundSlideshow() {
-            const slides = document.querySelectorAll('.bg-slide');
-            if (slides.length < 2) return;
-            let current = 0;
-            setInterval(() => {
-                slides[current].classList.remove('active');
-                current = (current + 1) % slides.length;
-                slides[current].classList.add('active');
-            }, 6000);
-        })();
-
-        // 粒子生成
-        (function createParticles() {
-            const container = document.getElementById('particles');
-            const count = 40;
-
-            for (let i = 0; i < count; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDuration = (8 + Math.random() * 12) + 's';
-                particle.style.animationDelay = (Math.random() * 10) + 's';
-                particle.style.width = (1 + Math.random() * 3) + 'px';
-                particle.style.height = particle.style.width;
-                container.appendChild(particle);
-            }
-        })();
-    </script>
+    <script src="assets/js/script.js"></script>
 </body>
 </html>
